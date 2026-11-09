@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Se busca a {{ alerta.nombre }}{% endblock %}
+
+{% block estilos_extra %}
+  <!-- Leaflet: librería gratuita de mapas -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
+{% block contenido %}
+{% if vigente %}
+<section class="encabezado-alerta">
+  <div class="container py-3 d-flex flex-wrap align-items-center gap-2">
+    <span class="etiqueta-alerta"><i class="bi bi-broadcast"></i> Alerta Patitas · Se busca</span>
+    <span class="small">Emitida {{ alerta.creada_en|hace_tiempo }}</span>
+  </div>
+</section>
+{% else %}
+<section class="encabezado-pagina">
+  <div class="container py-3">
+    {% if alerta.estado == 'encontrada' %}
+      <span class="insignia estado-adoptado"><i class="bi bi-heart-fill"></i> ¡Ya está en casa!</span>
+    {% else %}
+      <span class="insignia insignia-pendiente"><i class="bi bi-x-circle"></i> Alerta cerrada</span>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+<div class="container mt-4">
+  <nav aria-label="Ruta de navegación" class="small mb-3">
+    <a href="{{ url_for('alertas') }}"><i class="bi bi-arrow-left"></i> Todas las alertas</a>
+  </nav>
+
+  <div class="row g-4">
+    <!-- Foto y datos -->
+    <div class="col-lg-7">
+      <div class="tarjeta overflow-hidden">
+        <div class="row g-0">
+          <div class="col-sm-5">{{ c.foto_animal(alerta, "foto-alerta") }}</div>
+          <div class="col-sm-7 p-4">
+            <h1 class="titulo-pagina mb-1">{{ alerta.nombre }}</h1>
+            <p class="texto-suave mb-3">{{ alerta.especie|capitalize }} · {{ alerta.raza }}</p>
+            <div class="row g-2">
+              {% set datos = [('Sexo', alerta.sexo|capitalize), ('Tamaño', alerta.tamano|capitalize),
+                              ('Edad', alerta.edad_aproximada or 'No se sabe'), ('Color', alerta.color)] %}
+              {% for etiqueta, valor in datos %}
+              <div class="col-6"><div class="dato"><small>{{ etiqueta }}</small><strong>{{ valor }}</strong></div></div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tarjeta p-4 mt-4">
+        <h2 class="h6">Rasgos para reconocerlo</h2>
+        <dl class="lista-rasgos mb-0">
+          {% if alerta.senas_particulares %}<dt>Señas particulares</dt><dd>{{ alerta.senas_particulares }}</dd>{% endif %}
+          {% if alerta.collar %}<dt>Collar</dt><dd>{{ alerta.collar }}</dd>{% endif %}
+          {% if alerta.descripcion %}<dt>Qué pasó</dt><dd>{{ alerta.descripcion }}</dd>{% endif %}
+        </dl>
+      </div>
+
+      <div class="tarjeta p-4 mt-4">
+        <h2 class="h6"><i class="bi bi-geo-alt text-naranja"></i> Visto por última vez</h2>
+        <p class="mb-1 fw-semibold">{{ alerta.zona_referencia }}, {{ alerta.municipio }}</p>
+        <p class="small texto-suave">{{ alerta.visto_por_ultima_vez|fecha_local }} ({{ alerta.visto_por_ultima_vez|hace_tiempo }})</p>
+        {% if alerta.latitud_aprox is not none %}
+        <div id="mapa-alerta" class="mapa-alerta" role="img"
+             aria-label="Mapa de la zona aproximada donde se vio a {{ alerta.nombre }}"
+             data-lat="{{ alerta.latitud_aprox }}" data-lng="{{ alerta.longitud_aprox }}" data-radio-km="{{ radio_km }}"></div>
+        <p class="small texto-suave mt-2 mb-0"><span class="leyenda leyenda-zona"></span> Zona aproximada (no es la dirección exacta) ·
+          <span class="leyenda leyenda-radio"></span> Radio de aviso de {{ radio_km }} km</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Acciones y contacto -->
+    <div class="col-lg-5">
+      {% if vigente %}
+      <div class="tarjeta p-4 tarjeta-accion">
+        <h2 class="h5">¿Lo viste?</h2>
+        <p class="small">Avísale a su familia dónde y cuándo. Si puedes, quédate cerca sin perseguirlo y toma una foto.</p>
+        <button class="btn btn-alerta btn-lg w-100" disabled><i class="bi bi-eye"></i> Lo vi</button>
+        {{ c.aviso_etapa("Reportar avistamientos se activará cuando existan cuentas (Etapa 3).") }}
+        <button type="button" class="btn btn-contorno w-100 mt-3 boton-compartir"
+                data-titulo="Se busca a {{ alerta.nombre }}" data-texto="Ayuda a encontrar a {{ alerta.nombre }}, visto en {{ alerta.zona_referencia }}.">
+          <i class="bi bi-share"></i> Compartir alerta
+        </button>
+        <p class="small texto-suave text-center mt-2 mb-0 estado-compartir" role="status"></p>
+        {% if alerta.personas_avisadas %}
+        <p class="small text-center mt-3 mb-0"><i class="bi bi-people-fill text-salvia"></i> Se avisó a <strong>{{ alerta.personas_avisadas }}</strong> personas a {{ radio_km }} km o menos.</p>
+        {% elif alerta.personas_avisadas == 0 %}
+        <p class="small texto-suave text-center mt-3 mb-0">Todavía no hay personas con alertas activadas en esta zona.</p>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <div class="tarjeta p-4 mt-4">
+        <h2 class="h6">Familia que lo busca</h2>
+        <div class="d-flex align-items-center gap-3 my-3">
+          <span class="icono-circulo"><i class="bi bi-person-heart"></i></span>
+          <div>
+            <strong>{{ alerta.emisor.nombre_publico }}</strong><br>
+            <small class="texto-suave">
+              {% if alerta.emisor.creado_en %}En Patitas desde {{ alerta.emisor.creado_en|mes_anio }}{% endif %}
+            </small>
+          </div>
+        </div>
+        {% if alerta.emisor.nivel_verificacion in ['identidad_verificada', 'habilitada'] %}
+          <span class="insignia insignia-verificado"><i class="bi bi-patch-check-fill"></i> Identidad verificada</span>
+        {% else %}
+          <span class="insignia insignia-pendiente"><i class="bi bi-person"></i> Cuenta registrada (identidad no verificada)</span>
+        {% endif %}
+
+        <hr>
+        {% if vigente and alerta.mostrar_telefono %}
+          <p class="small mb-2"><i class="bi bi-telephone"></i> La familia autorizó mostrar su teléfono a personas con cuenta en Patitas.</p>
+          <a href="{{ url_for('iniciar_sesion') }}" class="btn btn-salvia w-100">Inicia sesión para ver el teléfono</a>
+        {% elif vigente %}
+          <p class="small mb-0"><i class="bi bi-chat-heart"></i> La familia prefiere recibir avisos por Patitas. Usa el botón <strong>Lo vi</strong>.</p>
+        {% endif %}
+      </div>
+
+      <div class="tarjeta p-4 mt-4 aviso-seguridad">
+        <h2 class="h6"><i class="bi bi-shield-exclamation"></i> Para tu seguridad</h2>
+        <ul class="small mb-0">
+          <li>Si alguien dice tenerlo y te pide dinero antes de verlo, puede ser una estafa.</li>
+          <li>Reúnete en un lugar público y acompañado.</li>
+          <li>Patitas muestra lo que publica la familia, pero no puede confirmar que todos los datos sean ciertos.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if vigente %}
+<!-- Celular: acciones principales siempre a la mano -->
+<div class="barra-accion-movil d-lg-none">
+  <button class="btn btn-alerta flex-grow-1" disabled><i class="bi bi-eye"></i> Lo vi</button>
+  <button type="button" class="btn btn-contorno boton-compartir" aria-label="Compartir alerta"
+          data-titulo="Se busca a {{ alerta.nombre }}" data-texto="Ayuda a encontrar a {{ alerta.nombre }}, visto en {{ alerta.zona_referencia }}.">
+    <i class="bi bi-share"></i>
+  </button>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts_extra %}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="{{ url_for('static', filename='js/alertas.js') }}"></script>
+{% endblock %}

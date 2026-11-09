@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Alertas{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-alerta">
+  <div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+      <div>
+        <span class="etiqueta-alerta"><i class="bi bi-broadcast"></i> Alerta Patitas</span>
+        <h1 class="titulo-pagina mt-2 mb-1">Mascotas que se buscan ahora</h1>
+        <p class="mb-0">Cada alerta avisa a las personas con alertas activadas en {{ radio_km }} km a la redonda.</p>
+      </div>
+      <a href="{{ url_for('emitir_alerta') }}" class="btn btn-alerta btn-lg"><i class="bi bi-megaphone"></i> Emitir una alerta</a>
+    </div>
+  </div>
+</section>
+
+<div class="container mt-4">
+  {% if alertas %}
+  <div class="row g-4">
+    {% for alerta in alertas %}
+      <div class="col-12 col-sm-6 col-lg-4">{{ c.tarjeta_alerta(alerta) }}</div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="tarjeta p-5 text-center">
+    <i class="bi bi-house-heart fs-1 text-salvia"></i>
+    <p class="mt-2 mb-0">No hay alertas activas. ¡Todas las mascotas reportadas están en casa!</p>
+  </div>
+  {% endif %}
+
+  <div class="row g-4 mt-2">
+    <div class="col-md-6">
+      <div class="tarjeta p-4 h-100">
+        <h2 class="h6"><i class="bi bi-bell text-naranja"></i> Recibe alertas de tu zona</h2>
+        <p class="small texto-suave mb-0">Al crear tu cuenta podrás elegir tu zona (tu colonia o un punto en el mapa) y aceptar recibir alertas. Patitas no rastrea tu ubicación: solo usa la zona que tú elijas, guardada de forma aproximada.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="tarjeta p-4 h-100">
+        <h2 class="h6"><i class="bi bi-shield-exclamation text-naranja"></i> Cuidado con las estafas</h2>
+        <p class="small texto-suave mb-0">Nunca deposites dinero a alguien que dice tener a una mascota sin antes verla en persona, en un lugar público y acompañado.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

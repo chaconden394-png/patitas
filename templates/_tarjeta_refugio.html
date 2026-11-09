@@ -1,0 +1,16 @@
+{# Tarjeta de refugio. Espera una variable "refugio". #}
+<article class="tarjeta p-4 h-100">
+  <div class="d-flex align-items-center gap-3 mb-3">
+    <span class="icono-circulo"><i class="bi bi-buildings"></i></span>
+    <div>
+      <h3 class="h6 mb-1">{{ refugio.nombre }}</h3>
+      {% if refugio.verificado %}
+        <span class="insignia insignia-verificado"><i class="bi bi-patch-check-fill"></i> Refugio verificado</span>
+      {% else %}
+        <span class="insignia insignia-pendiente"><i class="bi bi-clock"></i> Pendiente de verificación</span>
+      {% endif %}
+    </div>
+  </div>
+  <p class="small texto-suave">{{ refugio.descripcion }}</p>
+  <p class="small mb-0"><i class="bi bi-geo-alt text-salvia"></i> {{ refugio.zona }}{% if refugio.animales is not none %} · <i class="bi bi-heart text-naranja"></i> {{ refugio.animales }} animales{% endif %}</p>
+</article>

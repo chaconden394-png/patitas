@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Adoptar{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4">
+    <h1 class="titulo-pagina">Adoptar</h1>
+    <p class="mb-0">Animales que buscan un hogar responsable en Tijuana.</p>
+  </div>
+</section>
+
+<div class="container mt-4">
+  <div class="row g-4">
+    <!-- Filtros -->
+    <aside class="col-lg-3">
+      <form method="get" class="tarjeta p-3 filtros" aria-label="Filtros del catálogo">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h2 class="h6 mb-0"><i class="bi bi-sliders"></i> Filtros</h2>
+          {% if filtros %}<a href="{{ url_for('catalogo') }}" class="small">Limpiar</a>{% endif %}
+        </div>
+        {% set etiquetas = {"especie": "Especie", "tamano": "Tamaño", "sexo": "Sexo", "energia": "Energía"} %}
+        {% for campo, valores in opciones.items() %}
+          <label for="f-{{ campo }}" class="form-label small fw-semibold mt-2">{{ etiquetas[campo] }}</label>
+          <select id="f-{{ campo }}" name="{{ campo }}" class="form-select form-select-sm">
+            <option value="">Todos</option>
+            {% for v in valores %}
+              <option value="{{ v }}" {{ 'selected' if filtros.get(campo) == v }}>{{ v|capitalize }}</option>
+            {% endfor %}
+          </select>
+        {% endfor %}
+        <button class="btn btn-salvia w-100 mt-3" type="submit">Aplicar filtros</button>
+        <p class="small texto-suave mt-3 mb-0">Distancia, convivencia, vacunación y más filtros llegarán en la Etapa 4.</p>
+      </form>
+    </aside>
+
+    <!-- Resultados -->
+    <section class="col-lg-9" aria-live="polite">
+      <p class="texto-suave small mb-3">{{ animales|length }} resultado{{ 's' if animales|length != 1 }}</p>
+      {% if animales %}
+      <div class="row g-4">
+        {% for animal in animales %}
+          <div class="col-12 col-sm-6 col-xl-4">{{ c.tarjeta_animal(animal) }}</div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="tarjeta p-5 text-center">
+        <i class="bi bi-emoji-frown fs-1 text-salvia"></i>
+        <p class="mt-2 mb-3">No encontramos animales con esos filtros.</p>
+        <a href="{{ url_for('catalogo') }}" class="btn btn-contorno">Ver todos</a>
+      </div>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Comunidad{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4">
+    <h1 class="titulo-pagina">Comunidad</h1>
+    <p class="mb-0">Historias de éxito, campañas, rescates y voluntariado.</p>
+  </div>
+</section>
+
+<div class="container mt-4" style="max-width: 720px;">
+  {{ c.aviso_etapa("Publicar, comentar y dar me gusta se activará en la Etapa 6. Estas publicaciones son ejemplos.") }}
+  {% for p in publicaciones %}
+  <article class="tarjeta p-4 mt-3">
+    <div class="d-flex align-items-center gap-3 mb-2">
+      <span class="icono-circulo"><i class="bi {{ p.icono }}"></i></span>
+      <div>
+        <h2 class="h6 mb-0">{{ p.autor }}</h2>
+        <small class="texto-suave">{{ p.tipo }} · {{ p.tiempo }}</small>
+      </div>
+    </div>
+    <p class="mb-3">{{ p.texto }}</p>
+    <div class="d-flex gap-4 small texto-suave">
+      <span><i class="bi bi-heart"></i> {{ p.me_gusta }}</span>
+      <span><i class="bi bi-chat"></i> {{ p.comentarios }}</span>
+      <span><i class="bi bi-share"></i> Compartir</span>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block titulo %}Cómo funciona{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4">
+    <h1 class="titulo-pagina">Cómo funciona Patitas</h1>
+    <p class="mb-0">Una comunidad para rescatar, adoptar y cuidar, con la seguridad como prioridad.</p>
+  </div>
+</section>
+
+<div class="container mt-4">
+  <div class="row g-4">
+    {% set perfiles = [
+      ('bi-house-heart', 'Adoptantes', 'Buscan, solicitan y dan seguimiento a su adopción.'),
+      ('bi-person-heart', 'Rescatistas', 'Publican animales rescatados y revisan solicitudes.'),
+      ('bi-buildings', 'Refugios y asociaciones', 'Gestionan animales, adopciones y campañas.'),
+      ('bi-megaphone', 'Reportes ciudadanos', 'Avisan de animales perdidos, encontrados o en riesgo.'),
+      ('bi-people', 'Voluntarios y hogares temporales', 'Apoyan con tiempo y cuidado temporal.'),
+      ('bi-shop', 'Veterinarias y negocios', 'Ofrecen servicios a la comunidad pet friendly.')] %}
+    {% for icono, titulo, texto in perfiles %}
+    <div class="col-md-6 col-lg-4">
+      <div class="tarjeta p-4 h-100">
+        <span class="icono-circulo"><i class="bi {{ icono }}"></i></span>
+        <h2 class="h6 mt-3">{{ titulo }}</h2>
+        <p class="small texto-suave mb-0">{{ texto }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="tarjeta p-4 p-lg-5 mt-4">
+    <h2 class="titulo-seccion">Niveles de verificación</h2>
+    <ol class="lista-niveles mt-3">
+      <li><strong>Cuenta registrada.</strong> Correo electrónico confirmado.</li>
+      <li><strong>Identidad verificada.</strong> Revisión real de identificación oficial y selfie.</li>
+      <li><strong>Habilitado para adoptar o publicar.</strong> Teléfono verificado y cuestionario de tenencia responsable.</li>
+      <li><strong>Refugio verificado.</strong> Revisión de la organización por el equipo de Patitas.</li>
+    </ol>
+    <p class="small texto-suave mb-0">Subir un documento no verifica una cuenta automáticamente. Y una cuenta verificada no garantiza que una persona sea confiable: el refugio o rescatista siempre decide.</p>
+  </div>
+</div>
+{% endblock %}

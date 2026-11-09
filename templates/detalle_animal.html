@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}{{ animal.nombre }}{% endblock %}
+
+{% block contenido %}
+<div class="container mt-4">
+  <nav aria-label="Ruta de navegación" class="small mb-3">
+    {% if animal.estado in ['perdido', 'encontrado'] %}
+      <a href="{{ url_for('perdidos') }}"><i class="bi bi-arrow-left"></i> Perdidos y encontrados</a>
+    {% else %}
+      <a href="{{ url_for('catalogo') }}"><i class="bi bi-arrow-left"></i> Volver al catálogo</a>
+    {% endif %}
+  </nav>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="tarjeta overflow-hidden">{{ c.foto_animal(animal, "foto-detalle") }}</div>
+    </div>
+    <div class="col-lg-6">
+      {{ c.insignia_estado(animal.estado) }}
+      <h1 class="titulo-pagina mt-2">{{ animal.nombre }}</h1>
+      <p class="texto-suave"><i class="bi bi-geo-alt"></i> {{ animal.zona }}, Tijuana (ubicación aproximada)</p>
+      <p class="lead">{{ animal.personalidad }}</p>
+
+      <div class="row g-2 my-3">
+        {% set datos = [
+          ('Especie', animal.especie|capitalize), ('Raza', animal.raza), ('Edad', animal.edad),
+          ('Tamaño', animal.tamano|capitalize), ('Sexo', animal.sexo|capitalize), ('Energía', animal.energia|capitalize),
+          ('Vacunas', 'Al día' if animal.vacunado else 'Pendientes'), ('Esterilización', 'Sí' if animal.esterilizado else 'No')] %}
+        {% for etiqueta, valor in datos %}
+        <div class="col-6 col-sm-3">
+          <div class="dato"><small>{{ etiqueta }}</small><strong>{{ valor }}</strong></div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% if animal.estado in ['perdido', 'encontrado'] %}
+        <button class="btn btn-naranja btn-lg w-100" disabled>Tengo información sobre {{ animal.nombre if animal.nombre != 'Sin nombre' else 'este animal' }}</button>
+      {% elif animal.estado == 'adoptado' %}
+        <p class="fw-semibold">¡Este animal ya encontró hogar!</p>
+      {% else %}
+        <button class="btn btn-naranja btn-lg w-100" disabled>Solicitar adopción</button>
+      {% endif %}
+      {{ c.aviso_etapa("Las solicitudes y el contacto con el responsable se activarán cuando existan cuentas verificadas (Etapas 3 y 5).") }}
+    </div>
+  </div>
+</div>
+{% endblock %}

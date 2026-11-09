@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Emitir una alerta{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-alerta">
+  <div class="container py-4">
+    <span class="etiqueta-alerta"><i class="bi bi-broadcast"></i> Alerta Patitas</span>
+    <h1 class="titulo-pagina mt-2 mb-1">¿Se perdió tu mascota?</h1>
+    <p class="mb-0">Avisaremos a las personas con alertas activadas en {{ radio_km }} km a la redonda del lugar donde se vio por última vez.</p>
+  </div>
+</section>
+
+<div class="container mt-4">
+  {{ c.aviso_etapa("Emitir alertas se activará con las cuentas (Etapa 3). Este es el formulario que llenarás.") }}
+  <div class="row g-4 mt-1">
+    <div class="col-lg-7">
+      <form class="tarjeta p-4" onsubmit="return false;" aria-label="Formulario de alerta">
+        <fieldset disabled>
+          <h2 class="h6 mb-3">1. Tu mascota</h2>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label for="a-nombre" class="form-label small fw-semibold">Nombre</label>
+              <input id="a-nombre" class="form-control" placeholder="Chispa">
+            </div>
+            <div class="col-sm-6">
+              <label for="a-especie" class="form-label small fw-semibold">Especie</label>
+              <select id="a-especie" class="form-select"><option>Perro</option><option>Gato</option><option>Conejo</option><option>Ave</option><option>Otro</option></select>
+            </div>
+            <div class="col-sm-4">
+              <label for="a-sexo" class="form-label small fw-semibold">Sexo</label>
+              <select id="a-sexo" class="form-select"><option>Hembra</option><option>Macho</option><option>No sé</option></select>
+            </div>
+            <div class="col-sm-4">
+              <label for="a-tamano" class="form-label small fw-semibold">Tamaño</label>
+              <select id="a-tamano" class="form-select"><option>Pequeño</option><option>Mediano</option><option>Grande</option></select>
+            </div>
+            <div class="col-sm-4">
+              <label for="a-edad" class="form-label small fw-semibold">Edad aproximada</label>
+              <input id="a-edad" class="form-control" placeholder="3 años">
+            </div>
+            <div class="col-sm-6">
+              <label for="a-raza" class="form-label small fw-semibold">Raza</label>
+              <input id="a-raza" class="form-control" placeholder="No especificada">
+            </div>
+            <div class="col-sm-6">
+              <label for="a-color" class="form-label small fw-semibold">Color</label>
+              <input id="a-color" class="form-control" placeholder="Café con blanco">
+            </div>
+            <div class="col-12">
+              <label for="a-senas" class="form-label small fw-semibold">Señas particulares</label>
+              <textarea id="a-senas" class="form-control" rows="2" placeholder="Oreja izquierda doblada, mancha blanca en el pecho…"></textarea>
+            </div>
+            <div class="col-12">
+              <label for="a-collar" class="form-label small fw-semibold">Collar o placa</label>
+              <input id="a-collar" class="form-control" placeholder="Collar rosa con cascabel">
+            </div>
+            <div class="col-12">
+              <label for="a-foto" class="form-label small fw-semibold">Foto reciente (clara y de frente)</label>
+              <input id="a-foto" type="file" class="form-control" accept="image/*">
+            </div>
+          </div>
+
+          <h2 class="h6 mt-4 mb-3">2. Dónde y cuándo se vio por última vez</h2>
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="a-zona" class="form-label small fw-semibold">Zona o referencia</label>
+              <input id="a-zona" class="form-control" placeholder="Centro, cerca del Parque Teniente Guerrero">
+            </div>
+            <div class="col-sm-6">
+              <label for="a-fecha" class="form-label small fw-semibold">Fecha y hora</label>
+              <input id="a-fecha" type="datetime-local" class="form-control">
+            </div>
+            <div class="col-sm-6 d-flex align-items-end">
+              <button type="button" class="btn btn-contorno w-100"><i class="bi bi-crosshair"></i> Usar mi ubicación o marcar en el mapa</button>
+            </div>
+          </div>
+          <p class="small texto-suave mt-2">El punto exacto solo lo verás tú. Las demás personas verán una zona aproximada de 1 km.</p>
+
+          <h2 class="h6 mt-4 mb-3">3. Cómo pueden contactarte</h2>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="a-telefono">
+            <label class="form-check-label small" for="a-telefono">Mostrar mi teléfono a personas con cuenta en Patitas. Si no lo marcas, te avisarán solo por Patitas (más seguro contra estafas).</label>
+          </div>
+
+          <button class="btn btn-alerta btn-lg w-100 mt-4" type="submit"><i class="bi bi-broadcast"></i> Emitir alerta</button>
+        </fieldset>
+      </form>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="tarjeta p-4">
+        <h2 class="h6">Así verán tu alerta las personas cercanas</h2>
+        <p class="small texto-suave">Ejemplo con datos ficticios:</p>
+        {{ c.notificacion_previa(ejemplo, radio_km) }}
+      </div>
+      <div class="tarjeta p-4 mt-4">
+        <h2 class="h6">Reglas de las alertas</h2>
+        <ul class="small mb-0">
+          <li>Llega a quienes eligieron recibir alertas y tienen su zona a {{ radio_km }} km o menos.</li>
+          <li>Puedes tener hasta 2 alertas activas y emitir hasta 3 cada 24 horas.</li>
+          <li>Dura 30 días. Podrás renovarla si sigues buscando.</li>
+          <li>Cuando aparezca, márcala como encontrada: avisaremos a quienes ayudaron.</li>
+          <li>Las alertas falsas pueden ser reportadas y ocultadas por moderación.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

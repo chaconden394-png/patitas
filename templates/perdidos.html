@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Perdidos y encontrados{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4">
+    <h1 class="titulo-pagina">Perdidos y encontrados</h1>
+    <p class="mb-0">Animales que buscan volver a casa. <strong>No están en adopción.</strong></p>
+  </div>
+</section>
+
+<div class="container mt-4">
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <button class="btn btn-naranja" disabled><i class="bi bi-megaphone"></i> Reportar animal perdido</button>
+    <button class="btn btn-contorno" disabled><i class="bi bi-geo-alt"></i> Reportar animal encontrado</button>
+  </div>
+  {{ c.aviso_etapa("Los reportes con fotografía, ubicación y nivel de urgencia se activarán en la Etapa 6.") }}
+  <a href="{{ url_for('alertas') }}" class="tarjeta p-3 mt-3 d-flex gap-3 align-items-center enlace-alerta-perdidos">
+    <span class="icono-circulo icono-alerta"><i class="bi bi-broadcast"></i></span>
+    <span><strong>¿Se perdió tu mascota?</strong><br><small class="texto-suave">Emite una Alerta Patitas y avisaremos a las personas cercanas.</small></span>
+    <i class="bi bi-arrow-right ms-auto"></i>
+  </a>
+
+  <div class="row g-4 mt-1">
+    {% for animal in animales %}
+      <div class="col-12 col-sm-6 col-lg-4">{{ c.tarjeta_animal(animal) }}</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

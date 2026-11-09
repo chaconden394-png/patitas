@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block titulo %}Sin conexión{% endblock %}
+
+{% block contenido %}
+<div class="container my-5 text-center" style="max-width: 560px;">
+  <span class="icono-circulo" style="width:72px;height:72px;font-size:2rem;"><i class="bi bi-cloud-slash"></i></span>
+  <h1 class="titulo-pagina mt-3">No pudimos cargar la información</h1>
+  <p class="texto-suave">Hubo un problema al conectar con la base de datos. Intenta de nuevo en unos minutos.</p>
+  <a href="{{ request.path }}" class="btn btn-naranja">Reintentar</a>
+</div>
+{% endblock %}

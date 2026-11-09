@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Inicio{% endblock %}
+
+{% block contenido %}
+{% if alertas %}
+<!-- Alertas activas -->
+<section class="banda-alerta" aria-label="Alertas activas">
+  <div class="container d-flex flex-wrap align-items-center gap-2 gap-md-3 py-2">
+    <span class="etiqueta-alerta"><i class="bi bi-broadcast"></i> Alerta Patitas</span>
+    <span class="flex-grow-1">Se busca a
+      {% for a in alertas %}<a href="{{ url_for('detalle_alerta', alerta_id=a.id) }}"><strong>{{ a.nombre }}</strong></a> ({{ a.zona_referencia.split(',')[0] }}){{ ', ' if not loop.last }}{% endfor %}
+    </span>
+    <a href="{{ url_for('alertas') }}" class="enlace-flecha">Ver alertas <i class="bi bi-arrow-right"></i></a>
+  </div>
+</section>
+{% endif %}
+<!-- Portada -->
+<section class="portada">
+  <div class="container py-5">
+    <div class="row align-items-center g-4 g-lg-5">
+      <div class="col-lg-6">
+        <span class="etiqueta-seccion"><i class="bi bi-geo-alt-fill"></i> Tijuana, Baja California</span>
+        <h1 class="display-titulo mt-3">Busca amor.<br><span class="text-naranja">Encuentra hogar.</span></h1>
+        <p class="lead mt-3">Patitas conecta a quienes quieren adoptar con refugios, rescatistas y hogares temporales. Juntos hacemos que cada adopción sea responsable y segura.</p>
+
+        <form class="buscador mt-4" action="{{ url_for('catalogo') }}" method="get" role="search">
+          <label for="buscar-especie" class="visually-hidden">Especie</label>
+          <select id="buscar-especie" name="especie" class="form-select">
+            <option value="">Todas las especies</option>
+            <option value="perro">Perros</option>
+            <option value="gato">Gatos</option>
+            <option value="conejo">Conejos</option>
+            <option value="ave">Aves</option>
+          </select>
+          <label for="buscar-tamano" class="visually-hidden">Tamaño</label>
+          <select id="buscar-tamano" name="tamano" class="form-select">
+            <option value="">Cualquier tamaño</option>
+            <option value="pequeño">Pequeño</option>
+            <option value="mediano">Mediano</option>
+            <option value="grande">Grande</option>
+          </select>
+          <button class="btn btn-naranja" type="submit"><i class="bi bi-search"></i> Buscar</button>
+        </form>
+      </div>
+      <div class="col-lg-6">
+        <div class="collage">
+          {% for animal in destacados[:3] %}
+            <div class="collage-item collage-{{ loop.index }}">{{ c.foto_animal(animal) }}</div>
+          {% endfor %}
+          <div class="burbuja-dato">
+            <i class="bi bi-shield-check"></i>
+            <div><strong>Refugios verificados</strong><br><small>Revisados por el equipo de Patitas</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Accesos rápidos -->
+<section class="container mt-n4 position-relative">
+  <div class="row g-3">
+    {% set accesos = [
+      ('catalogo', 'bi-house-heart', 'Adoptar', 'Conoce a quienes buscan familia'),
+      ('alertas', 'bi-broadcast', 'Alerta Patitas', 'Avisa a tus vecinos si se pierde tu mascota'),
+      ('refugios', 'bi-buildings', 'Refugios', 'Apoya a quienes rescatan'),
+      ('comunidad', 'bi-people', 'Comunidad', 'Historias, campañas y voluntariado')] %}
+    {% for ruta, icono, titulo, texto in accesos %}
+    <div class="col-6 col-lg-3">
+      <a href="{{ url_for(ruta) }}" class="tarjeta acceso h-100">
+        <span class="icono-circulo"><i class="bi {{ icono }}"></i></span>
+        <h2 class="h6 mt-3 mb-1">{{ titulo }}</h2>
+        <p class="small texto-suave mb-0">{{ texto }}</p>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Destacados -->
+<section class="container mt-5 pt-3">
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-3">
+    <div>
+      <span class="etiqueta-seccion">Buscan hogar</span>
+      <h2 class="titulo-seccion mt-2">Ellos te están esperando</h2>
+    </div>
+    <a href="{{ url_for('catalogo') }}" class="enlace-flecha">Ver todos <i class="bi bi-arrow-right"></i></a>
+  </div>
+  <div class="row g-4">
+    {% for animal in destacados %}
+      <div class="col-12 col-sm-6 col-lg-3">{{ c.tarjeta_animal(animal) }}</div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Cómo funciona -->
+<section class="container mt-5 pt-3">
+  <div class="tarjeta bloque-pasos p-4 p-lg-5">
+    <span class="etiqueta-seccion">Adopción responsable</span>
+    <h2 class="titulo-seccion mt-2 mb-4">¿Cómo funciona?</h2>
+    <div class="row g-4">
+      {% set pasos = [
+        ('bi-search-heart', 'Encuentra', 'Explora perfiles con su personalidad, salud y necesidades.'),
+        ('bi-clipboard-check', 'Solicita', 'Completa una solicitud y un cuestionario de compatibilidad.'),
+        ('bi-chat-heart', 'Conversa', 'El refugio revisa tu solicitud y coordina una visita contigo.'),
+        ('bi-house-heart', 'Adopta', 'Recibe a tu nuevo integrante y comparte su seguimiento.')] %}
+      {% for icono, titulo, texto in pasos %}
+      <div class="col-sm-6 col-lg-3">
+        <div class="paso">
+          <span class="numero-paso">{{ loop.index }}</span>
+          <i class="bi {{ icono }} icono-paso"></i>
+          <h3 class="h6 mt-2">{{ titulo }}</h3>
+          <p class="small texto-suave mb-0">{{ texto }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Refugios -->
+<section class="container mt-5 pt-3">
+  <span class="etiqueta-seccion">Quienes rescatan</span>
+  <h2 class="titulo-seccion mt-2 mb-3">Refugios y asociaciones</h2>
+  <div class="row g-4">
+    {% for refugio in refugios %}
+    <div class="col-md-4">
+      {% include "_tarjeta_refugio.html" %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Llamado a la acción -->
+<section class="container mt-5">
+  <div class="cta p-4 p-lg-5">
+    <div class="row align-items-center g-3">
+      <div class="col-lg-8">
+        <h2 class="titulo-seccion text-white mb-2">¿Rescatas o tienes un refugio?</h2>
+        <p class="mb-0">Publica a tus animales, recibe solicitudes y organiza campañas desde un solo lugar.</p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <a href="{{ url_for('registro') }}" class="btn btn-crema btn-lg">Registrar mi refugio</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

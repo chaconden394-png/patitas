@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Crear cuenta{% endblock %}
+
+{% block contenido %}
+<div class="container my-5" style="max-width: 760px;">
+  <div class="text-center mb-4">
+    <h1 class="titulo-pagina">Únete a Patitas</h1>
+    <p class="texto-suave">Elige cómo quieres participar. Podrás completar tu verificación después.</p>
+  </div>
+  {{ c.aviso_etapa("El registro se activará en la Etapa 3. Por ahora puedes ver los tipos de cuenta.") }}
+
+  <div class="row g-3 mt-1">
+    {% set tipos = [
+      ('bi-house-heart', 'Quiero adoptar'),
+      ('bi-person-heart', 'Soy rescatista independiente'),
+      ('bi-buildings', 'Represento un refugio o asociación'),
+      ('bi-megaphone', 'Quiero reportar un animal'),
+      ('bi-people', 'Voluntariado u hogar temporal'),
+      ('bi-shop', 'Veterinaria o negocio pet friendly')] %}
+    {% for icono, texto in tipos %}
+    <div class="col-sm-6">
+      <label class="tarjeta opcion-cuenta p-3 d-flex align-items-center gap-3">
+        <input type="radio" name="tipo" class="form-check-input mt-0" disabled>
+        <span class="icono-circulo"><i class="bi {{ icono }}"></i></span>
+        <span class="fw-semibold">{{ texto }}</span>
+      </label>
+    </div>
+    {% endfor %}
+  </div>
+  <p class="small texto-suave text-center mt-4">Las cuentas de administrador no se pueden crear desde el registro público.<br>
+    Al registrarte aceptarás nuestro <a href="{{ url_for('privacidad') }}">aviso de privacidad</a>.</p>
+</div>
+{% endblock %}

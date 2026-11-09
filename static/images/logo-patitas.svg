@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Logotipo de Patitas">
+  <!-- Logo provisional: casa + lupa + huella + corazón. Reemplázalo por el logo oficial con el mismo nombre de archivo. -->
+  <!-- Casa -->
+  <path d="M8 30 L32 9 L56 30" fill="none" stroke="#6B8F71" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M14 26 V52 a4 4 0 0 0 4 4 H30" fill="none" stroke="#6B8F71" stroke-width="5" stroke-linecap="round"/>
+  <!-- Lupa -->
+  <circle cx="36" cy="36" r="12" fill="#F7F3E9" stroke="#6B8F71" stroke-width="4.5"/>
+  <path d="M45 45 L54 54" stroke="#6B8F71" stroke-width="5.5" stroke-linecap="round"/>
+  <!-- Huella dentro de la lupa -->
+  <ellipse cx="36" cy="39.5" rx="4.2" ry="3.4" fill="#A7B89F"/>
+  <circle cx="30.8" cy="34.6" r="1.8" fill="#A7B89F"/>
+  <circle cx="34" cy="31.4" r="1.8" fill="#A7B89F"/>
+  <circle cx="38" cy="31.4" r="1.8" fill="#A7B89F"/>
+  <circle cx="41.2" cy="34.6" r="1.8" fill="#A7B89F"/>
+  <!-- Corazón -->
+  <path d="M50 18.5 c-1.6-3.2-6.2-2.6-6.2 1 c0 2.8 3.4 4.8 6.2 7 c2.8-2.2 6.2-4.2 6.2-7 c0-3.6-4.6-4.2-6.2-1z" fill="#FF8F5A"/>
+</svg>

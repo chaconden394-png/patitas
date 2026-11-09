@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Refugios{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4">
+    <h1 class="titulo-pagina">Refugios y asociaciones</h1>
+    <p class="mb-0">Organizaciones que rescatan, rehabilitan y buscan familia para sus animales.</p>
+  </div>
+</section>
+
+<div class="container mt-4">
+  <div class="tarjeta p-3 mb-4 d-flex gap-3 align-items-start">
+    <i class="bi bi-shield-check fs-3 text-salvia"></i>
+    <p class="small mb-0">La insignia <strong>Refugio verificado</strong> solo aparece cuando el equipo de Patitas revisa la documentación del refugio. La verificación reduce riesgos, pero no sustituye tu propio criterio.</p>
+  </div>
+  <div class="row g-4">
+    {% for refugio in refugios %}
+      <div class="col-md-6 col-lg-4">{% include "_tarjeta_refugio.html" %}</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block titulo %}Página no encontrada{% endblock %}
+
+{% block contenido %}
+<div class="container my-5 text-center" style="max-width: 520px;">
+  <img src="{{ url_for('static', filename='images/logo-patitas.svg') }}" alt="" width="88" height="88">
+  <h1 class="titulo-pagina mt-3">Esta página se escapó</h1>
+  <p class="texto-suave">No encontramos lo que buscabas. Quizá alguien más lo esté buscando también.</p>
+  <a href="{{ url_for('inicio') }}" class="btn btn-naranja">Volver al inicio</a>
+</div>
+{% endblock %}
