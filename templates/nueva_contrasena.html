@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Nueva contraseña{% endblock %}
+
+{% block contenido %}
+<div class="container my-5">
+  <div class="tarjeta tarjeta-formulario p-4 p-sm-5">
+    <h1 class="h4">{{ 'Elige tu nueva contraseña' if recuperando else 'Cambiar contraseña' }}</h1>
+    <p class="texto-suave small">Mínimo 8 caracteres, con letras y números.</p>
+    <form method="post" class="mt-3" novalidate>
+      {{ c.csrf() }}
+      <div class="mb-3">{{ c.campo_contrasena("contrasena", "contrasena", "Nueva contraseña", "new-password") }}</div>
+      <div class="mb-4">{{ c.campo_contrasena("confirmar", "confirmar", "Repite la contraseña", "new-password") }}</div>
+      <button class="btn btn-naranja w-100" type="submit">Guardar contraseña</button>
+    </form>
+    {% if not recuperando %}
+    <p class="small text-center mt-4 mb-0"><a href="{{ url_for('mi_cuenta') }}"><i class="bi bi-arrow-left"></i> Volver a mi cuenta</a></p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

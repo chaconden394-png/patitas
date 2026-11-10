@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Mi panel{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4">
+    <h1 class="titulo-pagina mb-1">Mi panel</h1>
+    <p class="mb-0">Aquí gestionarás tus animales, solicitudes y campañas.</p>
+  </div>
+</section>
+<div class="container mt-4">
+  {{ c.aviso_etapa("Esta sección solo la ven refugios y rescatistas. Sus herramientas llegan en las próximas etapas.") }}
+  <div class="row g-4 mt-1">
+    {% for icono, titulo, etapa in [('bi-heart', 'Mis animales', 'Etapa 4'), ('bi-clipboard-check', 'Solicitudes de adopción', 'Etapa 5'),
+                                    ('bi-chat-heart', 'Mensajes', 'Etapa 5'), ('bi-cash-coin', 'Campañas y donaciones', 'Etapa 8')] %}
+    <div class="col-sm-6 col-lg-3">
+      <div class="tarjeta p-4 h-100">
+        <span class="icono-circulo"><i class="bi {{ icono }}"></i></span>
+        <h2 class="h6 mt-3 mb-1">{{ titulo }}</h2>
+        <p class="small texto-suave mb-0">Disponible en la {{ etapa }}.</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

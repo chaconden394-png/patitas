@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block titulo %}{{ perfil.nombre_publico }}{% endblock %}
+
+{% block contenido %}
+<div class="container my-5" style="max-width: 720px;">
+  <div class="tarjeta p-4 p-sm-5">
+    <div class="d-flex align-items-center gap-3">
+      <span class="avatar-inicial avatar-grande" aria-hidden="true">{{ perfil.nombre_publico[:1]|upper }}</span>
+      <div>
+        <h1 class="titulo-pagina mb-1">{{ perfil.nombre_publico }}</h1>
+        <p class="mb-0 texto-suave">{{ nombres_tipo.get(perfil.tipo_cuenta, perfil.tipo_cuenta) }} · {{ perfil.municipio }}</p>
+      </div>
+    </div>
+    <div class="mt-3">
+      {% if perfil.nivel_verificacion in ['identidad_verificada', 'habilitada'] %}
+        <span class="insignia insignia-verificado"><i class="bi bi-patch-check-fill"></i> {{ niveles[perfil.nivel_verificacion] }}</span>
+      {% else %}
+        <span class="insignia insignia-pendiente"><i class="bi bi-person"></i> Cuenta registrada (identidad no verificada)</span>
+      {% endif %}
+    </div>
+    {% if perfil.biografia %}<p class="mt-4 mb-0">{{ perfil.biografia }}</p>{% endif %}
+    <p class="small texto-suave mt-4 mb-0">En Patitas desde {{ perfil.creado_en[:7] }}. La verificación reduce riesgos, pero no garantiza que una persona sea confiable.</p>
+  </div>
+</div>
+{% endblock %}

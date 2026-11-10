@@ -45,10 +45,36 @@
           </li>
           {% endfor %}
         </ul>
+        {% if usuario_sesion %}
+        <div class="dropdown py-3 py-xl-0">
+          <button class="btn boton-usuario dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="avatar-inicial" aria-hidden="true">{{ usuario_sesion.nombre[:1]|upper }}</span>
+            <span class="nombre-usuario">{{ usuario_sesion.nombre }}</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end menu-usuario">
+            <li><a class="dropdown-item" href="{{ url_for('mi_cuenta') }}"><i class="bi bi-person-circle"></i> Mi cuenta</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('perfil_publico', usuario_id=usuario_sesion.id) }}"><i class="bi bi-eye"></i> Ver mi perfil público</a></li>
+            {% if usuario_sesion.tipo_cuenta in ['refugio', 'rescatista'] %}
+            <li><a class="dropdown-item" href="{{ url_for('panel') }}"><i class="bi bi-clipboard-heart"></i> Mi panel</a></li>
+            {% endif %}
+            {% if usuario_sesion.es_admin %}
+            <li><a class="dropdown-item" href="{{ url_for('panel_admin') }}"><i class="bi bi-shield-lock"></i> Administración</a></li>
+            {% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <form method="post" action="{{ url_for('cerrar_sesion') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="dropdown-item" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button>
+              </form>
+            </li>
+          </ul>
+        </div>
+        {% else %}
         <div class="d-flex flex-column flex-xl-row gap-2 py-3 py-xl-0">
           <a class="btn btn-contorno" href="{{ url_for('iniciar_sesion') }}">Iniciar sesión</a>
           <a class="btn btn-naranja" href="{{ url_for('registro') }}">Crear cuenta</a>
         </div>
+        {% endif %}
       </div>
     </div>
   </nav>
@@ -58,6 +84,19 @@
     <div class="container"><i class="bi bi-info-circle"></i> Modo de ejemplo: los animales, refugios y alertas son ficticios. Configura Supabase en <code>.env</code> para usar datos reales.</div>
   </div>
   {% endif %}
+  {% with mensajes = get_flashed_messages(with_categories=true) %}
+  {% if mensajes %}
+  <div class="container mt-3" role="status" aria-live="polite">
+    {% set iconos = {'exito': 'bi-check-circle-fill', 'error': 'bi-exclamation-circle-fill', 'aviso': 'bi-exclamation-triangle-fill', 'info': 'bi-info-circle-fill'} %}
+    {% for categoria, mensaje in mensajes %}
+    <div class="mensaje mensaje-{{ categoria if categoria in iconos else 'info' }}">
+      <i class="bi {{ iconos.get(categoria, 'bi-info-circle-fill') }}" aria-hidden="true"></i>
+      <span>{{ mensaje }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
   <main id="contenido">
     {% block contenido %}{% endblock %}
   </main>

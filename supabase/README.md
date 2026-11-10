@@ -4,6 +4,8 @@
 |---|---|
 | `migraciones/001_esquema_inicial.sql` | Tablas, permisos y reglas RLS base. Se ejecuta **una vez**. |
 | `migraciones/002_alertas_patitas.sql` | Alerta Patitas: alertas, zonas, avistamientos, notificaciones y la regla de 15 km. **Una vez**, después de la 001. |
+| `migraciones/003_cuentas.sql` | Cuentas: guarda la aceptación del aviso de privacidad al registrarse. **Una vez**, después de la 002. |
+| `plantillas_correo/` | Correos en español para pegar en Supabase (ver `GUIA_ETAPA3.md`). |
 | `datos_prueba/datos_ficticios.sql` | 2 refugios y 7 animales inventados. Se puede repetir. |
 | `datos_prueba/alerta_ficticia.sql` | Una alerta inventada ("Chispa (prueba)"). Se puede repetir. |
 
@@ -31,5 +33,9 @@
 - Las alertas vencen a los 30 días; las vencidas u ocultas no envían avisos.
 - Al marcarla como encontrada, se avisa a todas las personas que la recibieron.
 - Nadie puede crear notificaciones falsas ni ver las de otras personas.
+
+## Qué protege la migración 003 (12 pruebas)
+- Registrarse nunca crea administradores; pedir "administrador" da una cuenta de adoptante.
+- La fecha de aceptación del aviso solo la pone la base de datos (al registrarse o con `aceptar_aviso_privacidad()`).
 
 Las pruebas están en `tests/sql/`. Usan un PostgreSQL local que imita Supabase; **no** se ejecutan en Supabase.

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Administración{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4">
+    <h1 class="titulo-pagina mb-1"><i class="bi bi-shield-lock"></i> Administración</h1>
+    <p class="mb-0">Solo visible para administradores. El permiso se comprueba en la base de datos en cada visita.</p>
+  </div>
+</section>
+<div class="container mt-4">
+  {{ c.aviso_etapa("Las herramientas de administración (verificaciones, moderación, denuncias y estadísticas) llegan en la Etapa 7.") }}
+</div>
+{% endblock %}

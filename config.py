@@ -6,6 +6,7 @@ Todas las claves y datos sensibles se leen de variables de entorno
 """
 import os
 import secrets
+from datetime import timedelta
 
 from dotenv import load_dotenv
 
@@ -25,6 +26,8 @@ class Config:
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
     SESSION_COOKIE_SECURE = PATITAS_ENV == "production"
+    # La sesión dura 7 días; los tokens de Supabase se renuevan solos mientras tanto.
+    PERMANENT_SESSION_LIFETIME = timedelta(days=7)
 
     # Límite de tamaño de las peticiones (protege contra archivos enormes): 10 MB.
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024

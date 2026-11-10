@@ -1,9 +1,53 @@
 # Registro de avance — Patitas
 
 ## Estado actual (6 de noviembre de 2026)
-- **Etapa 1:** probada en el entorno de Claude; la app arranca en tu Codespace.
-- **Etapa 2:** ✅ confirmada en tu Supabase (`comprobar_supabase.py` → "Todo listo"). Falta revisar las páginas en el navegador.
-- **Alerta Patitas, Parte A:** lista y probada localmente. Falta ejecutar la migración 002 en tu Supabase.
+- **Etapa 1:** probada; la app arranca en tu Codespace.
+- **Etapa 2:** funcionó en tu primer proyecto de Supabase. Estás empezando desde cero con `GUIA_SUPABASE.md`.
+- **Alerta Patitas, Parte A:** lista y probada localmente.
+- **Etapa 3 (cuentas):** lista y probada con un simulador de Supabase. **Falta probarla con tu Supabase real** (`GUIA_ETAPA3.md`).
+
+---
+
+## Etapa 3 · Cuentas
+
+### ✅ Terminado y probado
+| Función | Cómo se probó |
+|---|---|
+| Registro con tipo de cuenta, nombre, correo, contraseña y aceptación del aviso | Pruebas con la librería real de Supabase + simulador; recorrido en navegador |
+| Confirmación de correo (enlace con botón "Continuar" para que los antivirus de correo no lo gasten) | Pruebas + navegador |
+| Inicio y cierre de sesión (la sesión se revoca también en Supabase) | Pruebas + navegador |
+| Recuperar y cambiar contraseña | Pruebas |
+| Renovación automática del token; si falla, se cierra la sesión | Pruebas |
+| Mi cuenta: nombre público, biografía, municipio, teléfono privado | Pruebas + navegador; los cambios usan el token de la persona (RLS) |
+| Perfil público sin correo ni teléfono | Pruebas |
+| Permisos por rol: panel solo para refugios/rescatistas; administración comprobada en la base de datos cada vez | Pruebas |
+| Protección CSRF en todos los formularios | Pruebas (y una prueba "rompiendo" la protección a propósito) |
+| Límite de intentos: inicio de sesión, registro, recuperación y reenvío | Pruebas |
+| Redirecciones solo dentro de Patitas | Pruebas con `//sitio-malo.com` y similares |
+| Migración 003: consentimiento del aviso guardado al registrarse; nadie puede inventar esa fecha | 12 pruebas SQL |
+
+### ⚠️ No probado todavía (requiere tu Supabase real)
+- Envío y recepción real de correos (confirmación y recuperación).
+- Las plantillas de correo y la Site URL configuradas en tu proyecto.
+- El simulador imita a Supabase; las reglas RLS reales están probadas aparte en `tests/sql/`.
+
+### 📌 Decisiones técnicas
+1. **Sesión en cookie firmada de Flask** (HttpOnly, SameSite=Lax, Secure en producción), 7 días.
+   Guarda los tokens de Supabase; el navegador no puede leerlos con JavaScript.
+2. **Un cliente de Supabase nuevo por persona y petición** (`cliente_de_usuario`): las sesiones nunca se mezclan.
+3. **Enlaces de correo con `token_hash`** verificados por el servidor (`/auth/confirmar`), en lugar del enlace por defecto.
+   Requiere cambiar 2 plantillas de correo en Supabase.
+4. **CSRF sin librerías extra** (`services/seguridad.py`).
+5. **Límite de intentos en memoria**: suficiente en desarrollo. En producción (Etapa 9) habrá que revisarlo,
+   porque se reinicia al reiniciar la app y Supabase verá la IP del servidor, no la de cada persona.
+6. **Contraseñas**: mínimo 8 caracteres con letras y números (validado en el servidor).
+7. **Administradores** solo desde la tabla `administradores` (SQL Editor); el registro nunca los crea.
+8. "Eliminar mi cuenta" queda pendiente: requiere la clave secreta en el servidor y el procedimiento de derechos ARCO.
+
+### Pendientes de la etapa
+- [ ] Servicio de correo propio (SMTP) para que lleguen correos a cualquier persona.
+- [ ] Verificación de teléfono por SMS (proveedor de pago, decisión pendiente).
+- [ ] Solicitudes de acceso, corrección y eliminación de datos (con el aviso de privacidad definitivo).
 
 ---
 
@@ -28,7 +72,7 @@
 - La consulta que une la alerta con el perfil del dueño, contra la API real de Supabase.
 - Los mosaicos del mapa (OpenStreetMap) en tu navegador.
 
-### Parte B (después de la Etapa 3: cuentas)
+### Parte B (ya se puede construir: la Etapa 3 está lista)
 - [ ] Formulario real para emitir alertas (con foto en Supabase Storage).
 - [ ] Elegir zona de alertas y activarlas o desactivarlas.
 - [ ] Campana de notificaciones dentro de Patitas.

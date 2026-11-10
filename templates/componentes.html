@@ -87,3 +87,31 @@
     <p class="mb-0">{{ alerta.especie|capitalize }} {{ alerta.color|lower }}, visto por última vez en {{ alerta.zona_referencia }}. Si lo ves, avísale a su familia.</p>
   </div>
 {% endmacro %}
+
+{# ---------------------------------------------------------------------------
+   Formularios de cuenta
+   --------------------------------------------------------------------------- #}
+
+{# Campo oculto obligatorio en todo formulario POST (protección CSRF) #}
+{% macro csrf() %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endmacro %}
+
+{# Contraseña con botón para mostrarla #}
+{% macro campo_contrasena(id, nombre, etiqueta, autocompletar="current-password", ayuda="") %}
+  <label for="{{ id }}" class="form-label small fw-semibold">{{ etiqueta }}</label>
+  <div class="input-group">
+    <input type="password" id="{{ id }}" name="{{ nombre }}" class="form-control" required
+           autocomplete="{{ autocompletar }}" {% if autocompletar == 'new-password' %}minlength="8" maxlength="72"{% endif %}
+           {% if ayuda %}aria-describedby="{{ id }}-ayuda"{% endif %}>
+    <button class="btn btn-contorno boton-mostrar" type="button" data-mostrar="{{ id }}" aria-label="Mostrar contraseña">
+      <i class="bi bi-eye" aria-hidden="true"></i>
+    </button>
+  </div>
+  {% if ayuda %}<p class="ayuda mb-0" id="{{ id }}-ayuda">{{ ayuda }}</p>{% endif %}
+{% endmacro %}
+
+{# Aviso cuando las cuentas no están disponibles (modo de ejemplo) #}
+{% macro aviso_sin_supabase(modo_ejemplo) %}
+  {% if modo_ejemplo %}
+    {{ aviso_etapa("Las cuentas necesitan Supabase. Sigue GUIA_SUPABASE.md y configura tu archivo .env.") }}
+  {% endif %}
+{% endmacro %}

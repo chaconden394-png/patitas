@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Mi cuenta{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4 d-flex align-items-center gap-3">
+    <span class="avatar-inicial avatar-grande" aria-hidden="true">{{ perfil.nombre_publico[:1]|upper }}</span>
+    <div>
+      <h1 class="titulo-pagina mb-1">{{ perfil.nombre_publico }}</h1>
+      <p class="mb-0 texto-suave">{{ nombres_tipo.get(perfil.tipo_cuenta, perfil.tipo_cuenta) }} · {{ usuario.correo }}</p>
+    </div>
+  </div>
+</section>
+
+<div class="container mt-4">
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <form method="post" class="tarjeta p-4" novalidate>
+        {{ c.csrf() }}
+        <h2 class="h6 mb-3">Perfil público</h2>
+        <div class="mb-3">
+          <label for="nombre_publico" class="form-label small fw-semibold">Nombre público</label>
+          <input id="nombre_publico" name="nombre_publico" class="form-control" required minlength="2" maxlength="60"
+                 value="{{ perfil.nombre_publico }}">
+        </div>
+        <div class="mb-3">
+          <label for="biografia" class="form-label small fw-semibold">Sobre ti</label>
+          <textarea id="biografia" name="biografia" class="form-control" rows="3" maxlength="500"
+                    placeholder="Cuéntanos sobre ti o tu refugio">{{ perfil.biografia or '' }}</textarea>
+          <p class="ayuda mb-0">Hasta 500 caracteres.</p>
+        </div>
+        <div class="mb-4">
+          <label for="municipio" class="form-label small fw-semibold">Municipio</label>
+          <input id="municipio" name="municipio" class="form-control" maxlength="60" value="{{ perfil.municipio }}">
+        </div>
+
+        <h2 class="h6 mb-3">Datos privados</h2>
+        <div class="mb-1">
+          <label for="telefono" class="form-label small fw-semibold">Teléfono</label>
+          <input id="telefono" name="telefono" type="tel" class="form-control" autocomplete="tel"
+                 placeholder="664 123 4567" value="{{ perfil.telefono or '' }}" aria-describedby="telefono-ayuda">
+          <p class="ayuda mb-0" id="telefono-ayuda">
+            Solo tú lo ves.
+            {% if perfil.telefono %}
+              {% if perfil.telefono_verificado %}<span class="text-salvia"><i class="bi bi-check-circle-fill"></i> Verificado</span>
+              {% else %}<span>Aún no verificado (la verificación por SMS llegará más adelante).</span>{% endif %}
+            {% endif %}
+          </p>
+        </div>
+        <button class="btn btn-naranja w-100 mt-4" type="submit">Guardar cambios</button>
+      </form>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="tarjeta p-4">
+        <h2 class="h6 mb-2">Tu cuenta</h2>
+        <dl class="mb-0">
+          <div class="dato-cuenta"><dt>Tipo de cuenta</dt><dd>{{ nombres_tipo.get(perfil.tipo_cuenta, perfil.tipo_cuenta) }}</dd></div>
+          <div class="dato-cuenta"><dt>Verificación</dt><dd>{{ niveles.get(perfil.nivel_verificacion, perfil.nivel_verificacion) }}</dd></div>
+          <div class="dato-cuenta"><dt>En Patitas desde</dt><dd>{{ perfil.creado_en[:10] }}</dd></div>
+          {% if perfil.es_admin %}<div class="dato-cuenta"><dt>Rol</dt><dd><i class="bi bi-shield-lock"></i> Administración</dd></div>{% endif %}
+        </dl>
+        <p class="ayuda mt-3 mb-0">El tipo de cuenta y la verificación solo los cambia el equipo de Patitas.</p>
+      </div>
+
+      <div class="tarjeta p-4 mt-4">
+        <h2 class="h6">Seguridad</h2>
+        <a href="{{ url_for('nueva_contrasena') }}" class="btn btn-contorno w-100"><i class="bi bi-key"></i> Cambiar contraseña</a>
+        <form method="post" action="{{ url_for('cerrar_sesion') }}" class="mt-2">
+          {{ c.csrf() }}
+          <button class="btn btn-contorno w-100" type="submit"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button>
+        </form>
+      </div>
+
+      <div class="tarjeta p-4 mt-4">
+        <h2 class="h6">Tus datos personales</h2>
+        <p class="small texto-suave mb-0">
+          {% if perfil.acepto_aviso_privacidad_en %}Aceptaste el aviso de privacidad el {{ perfil.acepto_aviso_privacidad_en[:10] }}.{% endif %}
+          Las solicitudes para consultar, corregir o eliminar tus datos se habilitarán junto con el aviso de privacidad definitivo.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

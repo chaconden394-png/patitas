@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Revisa tu correo{% endblock %}
+
+{% block contenido %}
+<div class="container my-5">
+  <div class="tarjeta tarjeta-formulario p-4 p-sm-5 text-center">
+    <span class="icono-circulo" style="width:72px;height:72px;font-size:2rem;"><i class="bi bi-envelope-heart"></i></span>
+    <h1 class="h4 mt-3">Revisa tu correo</h1>
+    <p>Si <strong>{{ correo }}</strong> no tenía cuenta en Patitas, te enviamos un enlace para confirmarla.</p>
+    <p class="small texto-suave">Ábrelo en este mismo navegador. Si no lo ves en unos minutos, revisa la carpeta de spam.</p>
+    <form method="post" action="{{ url_for('reenviar_confirmacion') }}" class="mt-4">
+      {{ c.csrf() }}
+      <button class="btn btn-contorno w-100" type="submit">Reenviar el correo</button>
+    </form>
+    <p class="small mt-3 mb-0">¿Ya la confirmaste? <a href="{{ url_for('iniciar_sesion') }}">Inicia sesión</a></p>
+  </div>
+</div>
+{% endblock %}

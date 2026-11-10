@@ -1,0 +1,15 @@
+<!-- Patitas · Plantilla "Reset Password" de Supabase
+     Asunto sugerido: Recupera tu contraseña de Patitas
+     Pega TODO este contenido en el cuerpo de la plantilla. -->
+<div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; color: #2F3A31;">
+  <h2 style="color: #6B8F71;">Recupera tu contraseña</h2>
+  <p>Recibimos una solicitud para cambiar la contraseña de tu cuenta de Patitas.</p>
+  <p style="text-align: center; margin: 28px 0;">
+    <a href="{{ .SiteURL }}/auth/confirmar?token_hash={{ .TokenHash }}&type=recovery"
+       style="background: #FF8F5A; color: #ffffff; padding: 12px 28px; border-radius: 999px; text-decoration: none; font-weight: bold;">
+      Elegir una contraseña nueva
+    </a>
+  </p>
+  <p style="font-size: 13px; color: #66705F;">Si no lo pediste, ignora este mensaje: tu contraseña no cambiará.</p>
+  <p style="font-size: 13px; color: #66705F;">Patitas · Busca amor. Encuentra hogar.</p>
+</div>

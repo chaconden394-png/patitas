@@ -50,7 +50,7 @@ python -m pytest -v
 Guía detallada: `GUIA_SUPABASE.md`.
 
 1. Editor de SQL de Supabase, en este orden y **una sola vez** cada una:
-   `supabase/migraciones/001_esquema_inicial.sql` → `supabase/migraciones/002_alertas_patitas.sql`.
+   `001_esquema_inicial.sql` → `002_alertas_patitas.sql` → `003_cuentas.sql` (carpeta `supabase/migraciones/`).
 2. Autenticación → Usuarios: crea `refugio.prueba@example.com`.
 3. Editor de SQL: `supabase/datos_prueba/datos_ficticios.sql` → `supabase/datos_prueba/alerta_ficticia.sql`.
 4. Botón **Connect** → copia `SUPABASE_URL` y la clave **publishable** a tu `.env`
@@ -93,6 +93,11 @@ Sustituye `static/images/logo-patitas.svg` por el logo oficial **con el mismo no
 | `supabase/` | Migraciones SQL y datos de prueba (ver `supabase/README.md`). |
 | `AVANCE.md` | Registro de avance, decisiones y pendientes. |
 | `GUIA_SUPABASE.md` | Paso a paso para conectar Supabase desde cero. |
+| `GUIA_ETAPA3.md` | Paso a paso para activar las cuentas (Etapa 3). |
+| `rutas_cuentas.py` | Páginas de registro, inicio de sesión, mi cuenta y paneles. |
+| `services/autenticacion.py` | Registro, sesión, contraseñas y perfil con Supabase Auth. |
+| `services/sesion.py` | Sesión del navegador y permisos por página. |
+| `services/seguridad.py` | Protección CSRF, límite de intentos y redirecciones seguras. |
 
 ## Reglas de seguridad del proyecto
 - Nunca subas el archivo `.env` a GitHub.

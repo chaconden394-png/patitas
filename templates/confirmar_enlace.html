@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}{{ 'Recuperar contraseña' if tipo == 'recovery' else 'Confirmar correo' }}{% endblock %}
+
+{% block contenido %}
+<div class="container my-5">
+  <div class="tarjeta tarjeta-formulario p-4 p-sm-5 text-center">
+    <span class="icono-circulo" style="width:72px;height:72px;font-size:2rem;">
+      <i class="bi {{ 'bi-key' if tipo == 'recovery' else 'bi-patch-check' }}"></i>
+    </span>
+    {% if tipo == 'recovery' %}
+      <h1 class="h4 mt-3">Elige una contraseña nueva</h1>
+      <p class="texto-suave">Presiona continuar para crear tu nueva contraseña.</p>
+    {% else %}
+      <h1 class="h4 mt-3">Confirma tu correo</h1>
+      <p class="texto-suave">Presiona continuar para activar tu cuenta de Patitas.</p>
+    {% endif %}
+    <form method="post">
+      {{ c.csrf() }}
+      <input type="hidden" name="token_hash" value="{{ token_hash }}">
+      <input type="hidden" name="type" value="{{ tipo }}">
+      <button class="btn btn-naranja btn-lg w-100" type="submit">Continuar</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

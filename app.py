@@ -7,13 +7,16 @@ Para ejecutar en Codespaces:
 """
 import os
 
-from flask import Flask, abort, render_template, request
+from flask import Flask, abort, render_template, request, session
 
 from config import Config
 from services import alertas as servicio_alertas
 from services import animales as servicio
 from services.datos_ejemplo import PUBLICACIONES
 from services.estados import ESTADOS
+from services.seguridad import token_csrf, verificar_csrf
+from services.sesion import usuario_actual
+from rutas_cuentas import registrar_rutas_cuentas
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -38,7 +41,7 @@ def foto_existe(nombre_archivo):
 
 
 # Disponibles en todas las plantillas, incluidas las macros de componentes.html.
-app.jinja_env.globals.update(ESTADOS=ESTADOS, foto_existe=foto_existe)
+app.jinja_env.globals.update(ESTADOS=ESTADOS, foto_existe=foto_existe, csrf_token=token_csrf)
 app.jinja_env.filters["hace_tiempo"] = servicio_alertas.hace_tiempo
 app.jinja_env.filters["fecha_local"] = servicio_alertas.fecha_local
 app.jinja_env.filters["mes_anio"] = servicio_alertas.mes_anio
@@ -46,8 +49,17 @@ app.jinja_env.filters["mes_anio"] = servicio_alertas.mes_anio
 
 @app.context_processor
 def variables_de_pagina():
-    # Para mostrar el aviso "modo de ejemplo" mientras Supabase no esté configurado.
-    return {"modo_ejemplo": servicio.modo_ejemplo()}
+    return {
+        # Aviso "modo de ejemplo" mientras Supabase no esté configurado.
+        "modo_ejemplo": servicio.modo_ejemplo(),
+        # Persona con sesión iniciada (o None) para el menú.
+        "usuario_sesion": usuario_actual(),
+    }
+
+
+@app.before_request
+def proteger_formularios():
+    verificar_csrf()  # todos los formularios POST deben traer el código CSRF
 
 
 @app.after_request
@@ -56,6 +68,9 @@ def cabeceras_seguridad(respuesta):
     respuesta.headers["X-Content-Type-Options"] = "nosniff"
     respuesta.headers["X-Frame-Options"] = "SAMEORIGIN"
     respuesta.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    if session.get("usuario"):
+        # Páginas con datos personales: que el navegador no las guarde en caché.
+        respuesta.headers["Cache-Control"] = "no-store"
     return respuesta
 
 
@@ -140,14 +155,8 @@ def acerca():
     return render_template("acerca.html")
 
 
-@app.route("/iniciar-sesion")
-def iniciar_sesion():
-    return render_template("login.html")
-
-
-@app.route("/registro")
-def registro():
-    return render_template("registro.html")
+# Registro, inicio de sesión, mi cuenta, etc. (Etapa 3)
+registrar_rutas_cuentas(app)
 
 
 @app.route("/privacidad")
@@ -161,6 +170,12 @@ def privacidad():
 @app.errorhandler(404)
 def pagina_no_encontrada(error):
     return render_template("404.html"), 404
+
+
+@app.errorhandler(400)
+def peticion_invalida(error):
+    mensaje = getattr(error, "description", None) or "La petición no es válida."
+    return render_template("error.html", titulo="Algo no salió bien", mensaje=mensaje), 400
 
 
 @app.errorhandler(servicio.ErrorBaseDeDatos)

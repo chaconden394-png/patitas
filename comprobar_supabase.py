@@ -92,6 +92,18 @@ def main():
         except Exception:
             print("  ✓ Un visitante no tiene permiso para ver zonas de alerta.")
 
+        paso(6, "Revisando cuentas (migración 003)")
+        try:
+            obtener_cliente().rpc("aceptar_aviso_privacidad", {}).execute()
+            print("  ✗ ¡PELIGRO! Un visitante pudo usar una función de cuentas. Revisa la migración 003.")
+            return 1
+        except Exception as error:
+            texto = str(error)
+            if "PGRST202" in texto or "Could not find the function" in texto:
+                print("  ✗ Falta la migración 003. Ejecuta supabase/migraciones/003_cuentas.sql")
+                return 1
+            print("  ✓ La migración 003 está instalada y protegida.")
+
     print("\nTodo listo: la app puede leer datos de Supabase.")
     return 0
 

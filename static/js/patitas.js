@@ -17,3 +17,14 @@ document.addEventListener("DOMContentLoaded", () => {
     select.addEventListener("change", () => select.form.submit());
   });
 });
+
+// Botón "mostrar contraseña"
+document.addEventListener("click", (evento) => {
+  const boton = evento.target.closest("[data-mostrar]");
+  if (!boton) return;
+  const campo = document.getElementById(boton.dataset.mostrar);
+  const visible = campo.type === "text";
+  campo.type = visible ? "password" : "text";
+  boton.setAttribute("aria-label", visible ? "Mostrar contraseña" : "Ocultar contraseña");
+  boton.querySelector("i").className = visible ? "bi bi-eye" : "bi bi-eye-slash";
+});

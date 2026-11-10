@@ -185,6 +185,40 @@ a.tarjeta, .enlace-tarjeta { display: block; color: inherit; text-decoration: no
 .banda-ejemplo { background: #FFF1E8; color: #8A4A26; font-size: .85rem; padding: .45rem 0; border-bottom: 1px solid #FFD9C4; }
 .banda-ejemplo code { color: inherit; font-weight: 700; }
 
+/* ---------- Cuentas ---------- */
+.boton-usuario { display: inline-flex; align-items: center; gap: .5rem; background: var(--blanco); border: 1px solid var(--borde); padding: .35rem .9rem .35rem .4rem; }
+.boton-usuario:hover, .boton-usuario:focus, .boton-usuario.show { background: var(--blanco); border-color: var(--salvia); }
+.avatar-inicial {
+  display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--salvia); color: var(--blanco); font-family: var(--fuente-titulos); font-weight: 600;
+}
+.avatar-grande { width: 72px; height: 72px; font-size: 1.8rem; flex-shrink: 0; }
+.nombre-usuario { max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
+.menu-usuario { border-radius: var(--radio-chico); border-color: var(--borde); box-shadow: var(--sombra); }
+.menu-usuario .dropdown-item { display: flex; gap: .5rem; align-items: center; padding: .5rem 1rem; }
+.menu-usuario .dropdown-item:active { background: var(--salvia); }
+
+.mensaje {
+  display: flex; gap: .6rem; align-items: flex-start; padding: .75rem 1rem; border-radius: var(--radio-chico);
+  margin-bottom: .5rem; font-size: .95rem; border: 1px solid transparent;
+}
+.mensaje-exito { background: #E3EEE2; color: #2F5535; border-color: #C5DAC3; }
+.mensaje-error { background: var(--alerta-suave); color: #8E2A21; border-color: #F6C9C3; }
+.mensaje-aviso { background: #FFF1D6; color: #7A4F00; border-color: #F5DCA6; }
+.mensaje-info  { background: #E2EEF4; color: #24546B; border-color: #C1DAE6; }
+
+.tarjeta-formulario { max-width: 480px; margin-inline: auto; }
+.form-label { color: var(--tinta); }
+.ayuda { font-size: .82rem; color: var(--tinta-suave); margin-top: .3rem; }
+.opcion-tipo { cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease; }
+.opcion-tipo:has(input:checked) { border-color: var(--salvia); box-shadow: 0 0 0 3px rgba(107, 143, 113, .25); }
+.opcion-tipo:hover { border-color: var(--verde-claro); }
+.dato-cuenta { display: flex; justify-content: space-between; gap: 1rem; padding: .6rem 0; border-bottom: 1px solid var(--borde); }
+.dato-cuenta:last-child { border-bottom: none; }
+.dato-cuenta dt { font-weight: 600; color: var(--tinta-suave); font-size: .9rem; }
+.dato-cuenta dd { margin: 0; text-align: right; }
+.boton-mostrar { border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; padding-inline: .9rem; }
+
 /* ---------- Alerta Patitas ----------
    Rojo coral (urgencia) en lugar del naranja de marca, para que una alerta
    nunca se confunda con un botón normal. */

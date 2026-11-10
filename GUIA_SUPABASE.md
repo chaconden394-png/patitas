@@ -19,7 +19,7 @@ Tiempo aproximado: 30 minutos. No necesitas instalar nada en tu computadora.
    ```bash
    pip install -r requirements.txt
    ```
-6. Comprueba que todo está bien (debe decir `51 passed`):
+6. Comprueba que todo está bien (debe decir `87 passed`):
    ```bash
    python -m pytest -q
    ```
@@ -44,6 +44,7 @@ pega **todo** el contenido → ejecutar (**Run**). Debe decir "Success".
 |---|---|---|
 | 1 | `supabase/migraciones/001_esquema_inicial.sql` | Una sola vez |
 | 2 | `supabase/migraciones/002_alertas_patitas.sql` | Una sola vez |
+| 3 | `supabase/migraciones/003_cuentas.sql` | Una sola vez |
 
 Comprobación (nueva consulta):
 ```sql
@@ -88,7 +89,7 @@ Deben aparecer **14 tablas**, todas con `true`.
 ```bash
 python comprobar_supabase.py
 ```
-Debe mostrar 5 pasos con ✓ y terminar en **"Todo listo"**.
+Debe mostrar 6 pasos con ✓ y terminar en **"Todo listo"**.
 
 ```bash
 flask --app app run --debug
@@ -118,6 +119,9 @@ git commit -m "Patitas: etapas 1 y 2 y Alerta Patitas (parte A)"
 ```bash
 git push
 ```
+
+## Siguiente: cuentas
+Para activar registro e inicio de sesión sigue `GUIA_ETAPA3.md` (desde su paso 3 si ya ejecutaste la migración 003).
 
 ## Errores comunes
 
