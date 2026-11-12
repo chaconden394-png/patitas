@@ -104,6 +104,18 @@ def main():
                 return 1
             print("  ✓ La migración 003 está instalada y protegida.")
 
+        paso(7, "Revisando Alerta Patitas Parte B (migración 004)")
+        try:
+            obtener_cliente().rpc("renovar_alerta", {"p_alerta": "00000000-0000-0000-0000-000000000000"}).execute()
+            print("  ✗ ¡PELIGRO! Un visitante pudo usar renovar_alerta. Revisa la migración 004.")
+            return 1
+        except Exception as error:
+            texto = str(error)
+            if "PGRST202" in texto or "Could not find the function" in texto:
+                print("  ✗ Falta la migración 004. Ejecuta supabase/migraciones/004_alertas_parte_b.sql")
+                return 1
+            print("  ✓ La migración 004 está instalada y protegida.")
+
     print("\nTodo listo: la app puede leer datos de Supabase.")
     return 0
 

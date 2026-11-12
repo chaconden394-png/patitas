@@ -68,30 +68,118 @@
         {% if alerta.latitud_aprox is not none %}
         <div id="mapa-alerta" class="mapa-alerta" role="img"
              aria-label="Mapa de la zona aproximada donde se vio a {{ alerta.nombre }}"
-             data-lat="{{ alerta.latitud_aprox }}" data-lng="{{ alerta.longitud_aprox }}" data-radio-km="{{ radio_km }}"></div>
+             data-lat="{{ alerta.latitud_aprox }}" data-lng="{{ alerta.longitud_aprox }}" data-radio-km="{{ radio_km }}"
+             data-avistamientos='{{ puntos_avistamientos|tojson }}'></div>
         <p class="small texto-suave mt-2 mb-0"><span class="leyenda leyenda-zona"></span> Zona aproximada (no es la dirección exacta) ·
-          <span class="leyenda leyenda-radio"></span> Radio de aviso de {{ radio_km }} km</p>
+          <span class="leyenda leyenda-radio"></span> Radio de aviso de {{ radio_km }} km
+          {% if es_duena and avistamientos %}· <span class="leyenda leyenda-avistamiento"></span> Avistamientos{% endif %}</p>
         {% endif %}
       </div>
     </div>
 
     <!-- Acciones y contacto -->
     <div class="col-lg-5">
-      {% if vigente %}
+      {% if vigente and es_duena %}
+      <!-- Panel de la dueña -->
       <div class="tarjeta p-4 tarjeta-accion">
+        <h2 class="h5">Tu alerta</h2>
+        <p class="small mb-2">Activa hasta el <strong>{{ alerta.expira_en|fecha_local }}</strong>.</p>
+        {% if alerta.personas_avisadas %}
+        <p class="small mb-3"><i class="bi bi-people-fill text-salvia"></i> Se avisó a <strong>{{ alerta.personas_avisadas }}</strong> {{ 'persona' if alerta.personas_avisadas == 1 else 'personas' }} a {{ radio_km }} km o menos.</p>
+        {% else %}
+        <p class="small texto-suave mb-3">Todavía no hay personas con alertas activadas en esa zona. Compártela para que más gente la vea.</p>
+        {% endif %}
+        <button type="button" class="btn btn-contorno w-100 boton-compartir"
+                data-titulo="Se busca a {{ alerta.nombre }}" data-texto="Ayuda a encontrar a {{ alerta.nombre }}, visto en {{ alerta.zona_referencia }}.">
+          <i class="bi bi-share"></i> Compartir alerta
+        </button>
+        <p class="small texto-suave text-center mt-2 mb-0 estado-compartir" role="status"></p>
+        {% if dias_restantes is not none and dias_restantes <= 7 %}
+        <form method="post" action="{{ url_for('renovar_alerta', alerta_id=alerta.id) }}" class="mt-2">
+          {{ c.csrf() }}
+          <button class="btn btn-contorno w-100" type="submit"><i class="bi bi-arrow-repeat"></i> Renovar 30 días más</button>
+        </form>
+        {% endif %}
+        <details class="cerrar-alerta mt-3">
+          <summary class="btn btn-salvia w-100">Cerrar la alerta</summary>
+          <div class="pt-3">
+            <form method="post" action="{{ url_for('cerrar_alerta', alerta_id=alerta.id) }}">
+              {{ c.csrf() }}
+              <input type="hidden" name="estado" value="encontrada">
+              <button class="btn btn-naranja w-100" type="submit"><i class="bi bi-heart-fill"></i> ¡Ya apareció!</button>
+            </form>
+            <p class="ayuda mt-1">Avisaremos a quienes recibieron la alerta.</p>
+            <form method="post" action="{{ url_for('cerrar_alerta', alerta_id=alerta.id) }}" class="mt-2">
+              {{ c.csrf() }}
+              <input type="hidden" name="estado" value="cancelada">
+              <button class="btn btn-contorno w-100" type="submit">Cancelar la alerta</button>
+            </form>
+            <p class="ayuda mt-1 mb-0">Una alerta cerrada no se puede volver a abrir.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="tarjeta p-4 mt-4" id="avistamientos">
+        <h2 class="h6"><i class="bi bi-eye text-naranja"></i> Avistamientos ({{ avistamientos|length }})</h2>
+        {% if avistamientos %}
+        <p class="ayuda">Solo tú ves esta lista. Los puntos marcados aparecen en el mapa.</p>
+        <ol class="lista-avistamientos mb-0">
+          {% for a in avistamientos %}
+          <li>
+            <strong>{{ a.lugar }}</strong>
+            <span class="d-block small texto-suave">{{ a.visto_en|fecha_local }} ({{ a.visto_en|hace_tiempo }}) · por {{ a.persona }}</span>
+            {% if a.comentario %}<span class="d-block small">{{ a.comentario }}</span>{% endif %}
+          </li>
+          {% endfor %}
+        </ol>
+        {% else %}
+        <p class="small texto-suave mb-0">Aún no te han reportado avistamientos. Te avisaremos en tus notificaciones.</p>
+        {% endif %}
+      </div>
+
+      {% elif vigente %}
+      <!-- Personas que la ven -->
+      <div class="tarjeta p-4 tarjeta-accion" id="lo-vi">
         <h2 class="h5">¿Lo viste?</h2>
         <p class="small">Avísale a su familia dónde y cuándo. Si puedes, quédate cerca sin perseguirlo y toma una foto.</p>
-        <button class="btn btn-alerta btn-lg w-100" disabled><i class="bi bi-eye"></i> Lo vi</button>
-        {{ c.aviso_etapa("Reportar avistamientos se activará cuando existan cuentas (Etapa 3).") }}
+        {% if modo_ejemplo %}
+          <button class="btn btn-alerta btn-lg w-100" disabled><i class="bi bi-eye"></i> Lo vi</button>
+          {{ c.aviso_etapa("Reportar avistamientos necesita Supabase.") }}
+        {% elif not usuario_sesion %}
+          <a class="btn btn-alerta btn-lg w-100" href="{{ url_for('iniciar_sesion', siguiente=url_for('detalle_alerta', alerta_id=alerta.id)) }}">
+            <i class="bi bi-eye"></i> Inicia sesión para avisar</a>
+          <p class="ayuda mt-2 mb-0">Pedimos una cuenta para evitar avisos falsos.</p>
+        {% else %}
+          <details class="formulario-lo-vi" {% if request.args.get('lo_vi') %}open{% endif %}>
+            <summary class="btn btn-alerta btn-lg w-100"><i class="bi bi-eye"></i> Lo vi</summary>
+            <form method="post" action="{{ url_for('reportar_avistamiento', alerta_id=alerta.id) }}" class="pt-3" novalidate>
+              {{ c.csrf() }}
+              <label for="v-lugar" class="form-label small fw-semibold">¿Dónde lo viste?</label>
+              <input id="v-lugar" name="lugar" class="form-control mb-3" required maxlength="200" placeholder="Calle Segunda y Constitución">
+              <label for="v-fecha" class="form-label small fw-semibold">¿Cuándo?</label>
+              <input id="v-fecha" name="visto_en" type="datetime-local" class="form-control mb-3" required value="{{ ahora_local }}">
+              <label for="v-comentario" class="form-label small fw-semibold">Comentario (opcional)</label>
+              <textarea id="v-comentario" name="comentario" class="form-control mb-3" rows="2" maxlength="500"
+                        placeholder="Iba hacia el parque, se veía asustado"></textarea>
+              <p class="small fw-semibold mb-1">Marca el lugar en el mapa (opcional)</p>
+              <div class="mapa-selector mapa-selector-chico" data-selector-mapa data-lat-input="v-latitud" data-lng-input="v-longitud"
+                   data-boton-ubicacion="v-usar-ubicacion" data-estado="v-estado-mapa"
+                   role="application" aria-label="Mapa para marcar dónde lo viste"></div>
+              <button type="button" class="btn btn-contorno w-100 mt-2" id="v-usar-ubicacion"><i class="bi bi-crosshair"></i> Usar mi ubicación</button>
+              <p class="ayuda" id="v-estado-mapa" role="status">Solo la familia verá este punto.</p>
+              <input type="hidden" name="latitud" id="v-latitud">
+              <input type="hidden" name="longitud" id="v-longitud">
+              <button class="btn btn-alerta w-100" type="submit">Enviar aviso a la familia</button>
+            </form>
+          </details>
+        {% endif %}
         <button type="button" class="btn btn-contorno w-100 mt-3 boton-compartir"
                 data-titulo="Se busca a {{ alerta.nombre }}" data-texto="Ayuda a encontrar a {{ alerta.nombre }}, visto en {{ alerta.zona_referencia }}.">
           <i class="bi bi-share"></i> Compartir alerta
         </button>
         <p class="small texto-suave text-center mt-2 mb-0 estado-compartir" role="status"></p>
         {% if alerta.personas_avisadas %}
-        <p class="small text-center mt-3 mb-0"><i class="bi bi-people-fill text-salvia"></i> Se avisó a <strong>{{ alerta.personas_avisadas }}</strong> personas a {{ radio_km }} km o menos.</p>
-        {% elif alerta.personas_avisadas == 0 %}
-        <p class="small texto-suave text-center mt-3 mb-0">Todavía no hay personas con alertas activadas en esta zona.</p>
+        <p class="small text-center mt-3 mb-0"><i class="bi bi-people-fill text-salvia"></i> Se avisó a <strong>{{ alerta.personas_avisadas }}</strong> {{ 'persona' if alerta.personas_avisadas == 1 else 'personas' }} a {{ radio_km }} km o menos.</p>
         {% endif %}
       </div>
       {% endif %}
@@ -113,12 +201,20 @@
           <span class="insignia insignia-pendiente"><i class="bi bi-person"></i> Cuenta registrada (identidad no verificada)</span>
         {% endif %}
 
+        {% if vigente and not es_duena %}
         <hr>
-        {% if vigente and alerta.mostrar_telefono %}
+        {% if alerta.mostrar_telefono and telefono %}
+          <p class="small mb-1"><i class="bi bi-telephone"></i> Teléfono de la familia:</p>
+          <p class="telefono-contacto mb-1">{{ telefono }}</p>
+          <p class="ayuda mb-0">No compartas este número fuera de Patitas.</p>
+        {% elif alerta.mostrar_telefono and usuario_sesion %}
+          <p class="small mb-0"><i class="bi bi-telephone"></i> La familia aún no registró su teléfono. Usa el botón <strong>Lo vi</strong>.</p>
+        {% elif alerta.mostrar_telefono %}
           <p class="small mb-2"><i class="bi bi-telephone"></i> La familia autorizó mostrar su teléfono a personas con cuenta en Patitas.</p>
-          <a href="{{ url_for('iniciar_sesion') }}" class="btn btn-salvia w-100">Inicia sesión para ver el teléfono</a>
-        {% elif vigente %}
+          <a href="{{ url_for('iniciar_sesion', siguiente=url_for('detalle_alerta', alerta_id=alerta.id)) }}" class="btn btn-salvia w-100">Inicia sesión para ver el teléfono</a>
+        {% else %}
           <p class="small mb-0"><i class="bi bi-chat-heart"></i> La familia prefiere recibir avisos por Patitas. Usa el botón <strong>Lo vi</strong>.</p>
+        {% endif %}
         {% endif %}
       </div>
 
@@ -137,7 +233,15 @@
 {% if vigente %}
 <!-- Celular: acciones principales siempre a la mano -->
 <div class="barra-accion-movil d-lg-none">
+  {% if es_duena %}
+  <a class="btn btn-salvia flex-grow-1" href="#avistamientos"><i class="bi bi-eye"></i> Avistamientos ({{ avistamientos|length }})</a>
+  {% elif usuario_sesion and not modo_ejemplo %}
+  <a class="btn btn-alerta flex-grow-1" href="{{ url_for('detalle_alerta', alerta_id=alerta.id, lo_vi=1) }}#lo-vi"><i class="bi bi-eye"></i> Lo vi</a>
+  {% elif not modo_ejemplo %}
+  <a class="btn btn-alerta flex-grow-1" href="{{ url_for('iniciar_sesion', siguiente=url_for('detalle_alerta', alerta_id=alerta.id)) }}"><i class="bi bi-eye"></i> Lo vi</a>
+  {% else %}
   <button class="btn btn-alerta flex-grow-1" disabled><i class="bi bi-eye"></i> Lo vi</button>
+  {% endif %}
   <button type="button" class="btn btn-contorno boton-compartir" aria-label="Compartir alerta"
           data-titulo="Se busca a {{ alerta.nombre }}" data-texto="Ayuda a encontrar a {{ alerta.nombre }}, visto en {{ alerta.zona_referencia }}.">
     <i class="bi bi-share"></i>
@@ -148,5 +252,6 @@
 
 {% block scripts_extra %}
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="{{ url_for('static', filename='js/mapa_selector.js') }}"></script>
   <script src="{{ url_for('static', filename='js/alertas.js') }}"></script>
 {% endblock %}

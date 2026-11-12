@@ -16,6 +16,7 @@ from services.datos_ejemplo import PUBLICACIONES
 from services.estados import ESTADOS
 from services.seguridad import token_csrf, verificar_csrf
 from services.sesion import usuario_actual
+from rutas_alertas import registrar_rutas_alertas
 from rutas_cuentas import registrar_rutas_cuentas
 
 app = Flask(__name__)
@@ -114,29 +115,8 @@ def perdidos():
     return render_template("perdidos.html", animales=servicio.listar_perdidos_encontrados())
 
 
-# ---------------------------------------------------------------------------
-# Alerta Patitas (mascotas perdidas)
-# ---------------------------------------------------------------------------
-@app.route("/alertas")
-def alertas():
-    return render_template("alertas.html", alertas=servicio_alertas.listar_vigentes(),
-                           radio_km=servicio_alertas.RADIO_KM)
-
-
-@app.route("/alertas/emitir")
-def emitir_alerta():
-    # Visual por ahora: emitir requiere cuentas (Etapa 3).
-    ejemplo = servicio_alertas.datos_ejemplo.ALERTAS[0]
-    return render_template("alerta_emitir.html", ejemplo=ejemplo, radio_km=servicio_alertas.RADIO_KM)
-
-
-@app.route("/alerta/<alerta_id>")
-def detalle_alerta(alerta_id):
-    alerta = servicio_alertas.obtener(alerta_id)
-    if alerta is None:
-        abort(404)
-    return render_template("alerta_detalle.html", alerta=alerta,
-                           vigente=servicio_alertas.vigente(alerta), radio_km=servicio_alertas.RADIO_KM)
+# Alerta Patitas: lista, detalle, emitir, "Lo vi", mi zona, notificaciones
+registrar_rutas_alertas(app)
 
 
 @app.route("/refugios")

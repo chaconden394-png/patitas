@@ -46,7 +46,12 @@
           {% endfor %}
         </ul>
         {% if usuario_sesion %}
-        <div class="dropdown py-3 py-xl-0">
+        <div class="d-flex align-items-center gap-2 py-3 py-xl-0">
+        <a href="{{ url_for('notificaciones') }}" class="campana" aria-label="Notificaciones{% if notificaciones_no_leidas %}: {{ notificaciones_no_leidas }} sin leer{% endif %}">
+          <i class="bi bi-bell" aria-hidden="true"></i>
+          {% if notificaciones_no_leidas %}<span class="contador-campana">{{ notificaciones_no_leidas if notificaciones_no_leidas < 100 else '99+' }}</span>{% endif %}
+        </a>
+        <div class="dropdown">
           <button class="btn boton-usuario dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             <span class="avatar-inicial" aria-hidden="true">{{ usuario_sesion.nombre[:1]|upper }}</span>
             <span class="nombre-usuario">{{ usuario_sesion.nombre }}</span>
@@ -54,6 +59,9 @@
           <ul class="dropdown-menu dropdown-menu-end menu-usuario">
             <li><a class="dropdown-item" href="{{ url_for('mi_cuenta') }}"><i class="bi bi-person-circle"></i> Mi cuenta</a></li>
             <li><a class="dropdown-item" href="{{ url_for('perfil_publico', usuario_id=usuario_sesion.id) }}"><i class="bi bi-eye"></i> Ver mi perfil público</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('notificaciones') }}"><i class="bi bi-bell"></i> Notificaciones</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('zona_alertas') }}"><i class="bi bi-geo-alt"></i> Mi zona de alertas</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('mis_alertas') }}"><i class="bi bi-broadcast"></i> Mis alertas</a></li>
             {% if usuario_sesion.tipo_cuenta in ['refugio', 'rescatista'] %}
             <li><a class="dropdown-item" href="{{ url_for('panel') }}"><i class="bi bi-clipboard-heart"></i> Mi panel</a></li>
             {% endif %}
@@ -68,6 +76,7 @@
               </form>
             </li>
           </ul>
+        </div>
         </div>
         {% else %}
         <div class="d-flex flex-column flex-xl-row gap-2 py-3 py-xl-0">

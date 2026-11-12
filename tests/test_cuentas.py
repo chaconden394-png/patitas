@@ -341,3 +341,13 @@ def test_si_no_se_puede_leer_el_perfil_no_queda_sesion_a_medias(cliente, sim):
     with cliente.session_transaction() as s:
         assert "usuario" not in s and "tokens" not in s
     assert peticiones(sim, "/auth/v1/logout")
+
+
+def test_fallo_de_smtp_da_mensaje_claro_y_queda_en_la_terminal(cliente, sim, caplog):
+    sim.falla_correo = True
+    r = post(cliente, "/registro", REGISTRO_OK)
+    assert r.status_code == 200
+    assert "falló el envío del correo" in texto(r)
+    assert "unexpected_failure" not in texto(r)  # el detalle técnico no se muestra en la página
+    assert "Error sending confirmation email" in caplog.text  # pero sí queda en la terminal
+    assert CONTRASENA not in caplog.text  # y nunca se anotan contraseñas

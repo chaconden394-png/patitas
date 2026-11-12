@@ -5,6 +5,7 @@
 | `migraciones/001_esquema_inicial.sql` | Tablas, permisos y reglas RLS base. Se ejecuta **una vez**. |
 | `migraciones/002_alertas_patitas.sql` | Alerta Patitas: alertas, zonas, avistamientos, notificaciones y la regla de 15 km. **Una vez**, después de la 001. |
 | `migraciones/003_cuentas.sql` | Cuentas: guarda la aceptación del aviso de privacidad al registrarse. **Una vez**, después de la 002. |
+| `migraciones/004_alertas_parte_b.sql` | Contenedor de fotos `fotos-alertas`, `emitir_alerta()` y `renovar_alerta()`. **Una vez**, después de la 003. |
 | `plantillas_correo/` | Correos en español para pegar en Supabase (ver `GUIA_ETAPA3.md`). |
 | `datos_prueba/datos_ficticios.sql` | 2 refugios y 7 animales inventados. Se puede repetir. |
 | `datos_prueba/alerta_ficticia.sql` | Una alerta inventada ("Chispa (prueba)"). Se puede repetir. |
@@ -37,5 +38,11 @@
 ## Qué protege la migración 003 (12 pruebas)
 - Registrarse nunca crea administradores; pedir "administrador" da una cuenta de adoptante.
 - La fecha de aceptación del aviso solo la pone la base de datos (al registrarse o con `aceptar_aviso_privacidad()`).
+
+## Qué protege la migración 004 (19 pruebas)
+- Cada persona solo sube y borra fotos en su carpeta (`fotos-alertas/<su id>/`). Solo JPEG, máximo 5 MB.
+- Una alerta solo puede usar una foto de la carpeta de quien la emite.
+- `emitir_alerta()` guarda alerta y ubicación juntas: si una falla, no se guarda nada.
+- Renovar: solo la dueña, solo alertas activas, solo con 7 días o menos, respetando el límite de 2.
 
 Las pruebas están en `tests/sql/`. Usan un PostgreSQL local que imita Supabase; **no** se ejecutan en Supabase.

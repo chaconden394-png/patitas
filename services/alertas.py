@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 
 from services import datos_ejemplo
 from services.animales import ErrorBaseDeDatos, modo_ejemplo
+from services.fotos import url_publica
 from services.supabase_cliente import obtener_cliente
 
 try:
@@ -24,7 +25,7 @@ RADIO_KM = 15
 LIMITE_ALERTAS = 30
 
 CAMPOS_ALERTA = (
-    "id,nombre_mascota,especie,raza,sexo,tamano,edad_aproximada,color,senas_particulares,collar,"
+    "id,emisor_id,nombre_mascota,especie,raza,sexo,tamano,edad_aproximada,color,senas_particulares,collar,"
     "descripcion,ruta_foto,zona_referencia,municipio,visto_por_ultima_vez,latitud_aprox,longitud_aprox,"
     "mostrar_telefono,estado,creada_en,expira_en,"
     "emisor:perfiles(nombre_publico,creado_en,nivel_verificacion)"
@@ -77,9 +78,12 @@ def mes_anio(fecha):
 # Conversión de filas al formato de las plantillas
 # ---------------------------------------------------------------------------
 def fila_a_alerta(fila):
+    from flask import current_app
+
     emisor = fila.get("emisor") or {}
     return {
         "id": fila["id"],
+        "emisor_id": fila.get("emisor_id"),
         "nombre": fila["nombre_mascota"],
         "especie": fila["especie"],
         "raza": fila.get("raza") or "No especificada",
@@ -99,7 +103,8 @@ def fila_a_alerta(fila):
         "longitud_aprox": float(fila["longitud_aprox"]) if fila.get("longitud_aprox") is not None else None,
         "mostrar_telefono": bool(fila.get("mostrar_telefono")),
         "estado": fila["estado"],
-        "foto": None,  # las fotos llegan con Supabase Storage (Etapa 4)
+        "foto": None,  # foto local (solo modo de ejemplo)
+        "foto_url": url_publica(current_app.config["SUPABASE_URL"], fila.get("ruta_foto")),
         "personas_avisadas": None,
         "emisor": {
             "nombre_publico": emisor.get("nombre_publico") or "Usuario de Patitas",
@@ -107,6 +112,13 @@ def fila_a_alerta(fila):
             "nivel_verificacion": emisor.get("nivel_verificacion") or "registrada",
         },
     }
+
+
+def distancia_km(lat1, lng1, lat2, lng2):
+    """Distancia en km entre dos puntos (misma fórmula que la base de datos)."""
+    from math import asin, cos, radians, sin, sqrt
+    return 2 * 6371 * asin(sqrt(sin(radians(lat2 - lat1) / 2) ** 2
+                               + cos(radians(lat1)) * cos(radians(lat2)) * sin(radians(lng2 - lng1) / 2) ** 2))
 
 
 def vigente(alerta, ahora=None):

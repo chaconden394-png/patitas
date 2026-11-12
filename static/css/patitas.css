@@ -273,6 +273,35 @@ a.tarjeta, .enlace-tarjeta { display: block; color: inherit; text-decoration: no
 .notificacion-cabecera { display: flex; align-items: center; gap: .4rem; font-size: .75rem; color: #6E6E73; margin-bottom: .3rem; text-transform: uppercase; letter-spacing: .03em; }
 .notificacion-previa strong { display: block; margin-bottom: .15rem; }
 
+/* ---------- Alerta Patitas, Parte B ---------- */
+.text-alerta { color: var(--alerta-oscuro); }
+.foto-previa { max-width: 100%; max-height: 220px; border-radius: var(--radio-chico); object-fit: cover; }
+.mapa-selector { height: 320px; border-radius: var(--radio-chico); overflow: hidden; background: var(--crema); z-index: 0; border: 1px solid var(--borde); }
+.mapa-selector-chico { height: 220px; }
+.leyenda-avistamiento { background: #6B7BC9; border: 2px solid #3B4A8F; }
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+.cerrar-alerta[open] > summary, .formulario-lo-vi[open] > summary { opacity: .85; }
+.lista-avistamientos { padding-left: 1.2rem; display: grid; gap: .75rem; }
+.telefono-contacto { font-family: var(--fuente-titulos); font-size: 1.4rem; font-weight: 600; letter-spacing: .03em; user-select: all; }
+.campana { position: relative; display: inline-grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; color: var(--tinta); font-size: 1.25rem; text-decoration: none; }
+.campana:hover { background: rgba(167, 184, 159, .3); color: var(--salvia-oscuro); }
+.contador-campana {
+  position: absolute; top: 2px; right: 0; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px;
+  background: var(--alerta); color: var(--blanco); font-size: .7rem; font-weight: 700; line-height: 19px; text-align: center;
+  font-family: var(--fuente-titulos);
+}
+.notificacion { display: flex; gap: .9rem; align-items: flex-start; color: inherit; text-decoration: none; }
+.notificacion.no-leida { border-color: #F6C9C3; background: #FFFBFA; }
+.punto-no-leida { width: 10px; height: 10px; border-radius: 50%; background: var(--alerta); flex-shrink: 0; margin-top: .4rem; }
+.fila-alerta { display: flex; gap: 1rem; align-items: center; color: inherit; text-decoration: none; }
+.miniatura { width: 64px; height: 64px; border-radius: var(--radio-chico); overflow: hidden; flex-shrink: 0; }
+.miniatura .foto-animal { height: 100%; aspect-ratio: 1 / 1; }
+.miniatura .huella-grande svg { width: 28px; height: 28px; }
+.miniatura .foto-pendiente small { display: none; }
+.min-w-0 { min-width: 0; }
+.d-grid > * { min-width: 0; }  /* que el texto largo se recorte en vez de ensanchar la página */
+
 /* ---------- Pie de página ---------- */
 .pie { background: var(--tinta); color: var(--crema); }
 .pie h2 { color: var(--verde-claro); }

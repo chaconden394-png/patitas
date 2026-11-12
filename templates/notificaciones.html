@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Notificaciones{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <h1 class="titulo-pagina mb-0">Notificaciones</h1>
+    {% if notificaciones|selectattr('leida', 'equalto', false)|list %}
+    <form method="post" action="{{ url_for('marcar_notificaciones_leidas') }}">
+      {{ c.csrf() }}
+      <button class="btn btn-contorno" type="submit"><i class="bi bi-check2-all"></i> Marcar todas como leídas</button>
+    </form>
+    {% endif %}
+  </div>
+</section>
+
+<div class="container mt-4" style="max-width: 760px;">
+  {% if notificaciones %}
+  <ul class="list-unstyled d-grid gap-2 mb-0">
+    {% set iconos = {'alerta_cercana': 'bi-broadcast', 'avistamiento': 'bi-eye', 'alerta_cerrada': 'bi-heart-fill'} %}
+    {% for n in notificaciones %}
+    <li>
+      <a href="{{ url_for('detalle_alerta', alerta_id=n.alerta_id) if n.alerta_id else '#' }}"
+         class="tarjeta notificacion {{ 'no-leida' if not n.leida }} p-3">
+        <span class="icono-circulo {{ 'icono-alerta' if n.tipo == 'alerta_cercana' }}"><i class="bi {{ iconos.get(n.tipo, 'bi-bell') }}"></i></span>
+        <span class="flex-grow-1 min-w-0">
+          <strong class="d-block">{{ n.titulo }}</strong>
+          <span class="d-block small">{{ n.cuerpo }}</span>
+          <span class="d-block small texto-suave mt-1">{{ n.creada_en|hace_tiempo }}</span>
+        </span>
+        {% if not n.leida %}<span class="punto-no-leida" aria-label="Sin leer"></span>{% endif %}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="tarjeta p-5 text-center">
+    <i class="bi bi-bell fs-1 text-salvia"></i>
+    <p class="mt-2">No tienes notificaciones.</p>
+    <a href="{{ url_for('zona_alertas') }}" class="btn btn-contorno">Elegir mi zona de alertas</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

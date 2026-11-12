@@ -65,6 +65,12 @@
       </div>
 
       <div class="tarjeta p-4 mt-4">
+        <h2 class="h6">Alerta Patitas</h2>
+        <a href="{{ url_for('zona_alertas') }}" class="btn btn-contorno w-100"><i class="bi bi-geo-alt"></i> Mi zona de alertas</a>
+        <a href="{{ url_for('mis_alertas') }}" class="btn btn-contorno w-100 mt-2"><i class="bi bi-broadcast"></i> Mis alertas</a>
+      </div>
+
+      <div class="tarjeta p-4 mt-4">
         <h2 class="h6">Seguridad</h2>
         <a href="{{ url_for('nueva_contrasena') }}" class="btn btn-contorno w-100"><i class="bi bi-key"></i> Cambiar contraseña</a>
         <form method="post" action="{{ url_for('cerrar_sesion') }}" class="mt-2">

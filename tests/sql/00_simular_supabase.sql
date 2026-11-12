@@ -27,3 +27,24 @@ grant usage on schema public to anon, authenticated, service_role;
 -- comprobar que la migración los restringe correctamente.
 alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
 alter default privileges in schema public grant all on functions to anon, authenticated, service_role;
+
+-- Storage (para la migración 004): contenedores, archivos y storage.foldername().
+create schema storage;
+create table storage.buckets (
+  id text primary key, name text not null, public boolean default false,
+  file_size_limit bigint, allowed_mime_types text[]
+);
+create table storage.objects (
+  id uuid primary key default gen_random_uuid(),
+  bucket_id text references storage.buckets (id),
+  name text not null,
+  owner uuid
+);
+-- Igual que en Supabase: las carpetas de la ruta, sin el nombre del archivo.
+create function storage.foldername(name text) returns text[] language sql immutable as $$
+  select (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'), 1) - 1]
+$$;
+alter table storage.objects enable row level security;
+grant usage on schema storage to anon, authenticated;
+grant all on storage.objects, storage.buckets to anon, authenticated;
+grant execute on function storage.foldername(text) to anon, authenticated;

@@ -24,6 +24,19 @@ document.addEventListener("DOMContentLoaded", () => {
     L.circle([lat, lng], {
       radius: 800, color: "#E8763F", weight: 2, fillColor: "#FF8F5A", fillOpacity: 0.35,
     }).addTo(mapa);
+
+    // Avistamientos (solo llegan a la página de la dueña de la alerta)
+    let puntos = [];
+    try { puntos = JSON.parse(contenedor.dataset.avistamientos || "[]"); } catch (e) { puntos = []; }
+    puntos.forEach((p) => {
+      const marcador = L.circleMarker([p.lat, p.lng], {
+        radius: 8, color: "#3B4A8F", weight: 2, fillColor: "#6B7BC9", fillOpacity: 0.9,
+      }).addTo(mapa);
+      // El texto lo escribió otra persona: se muestra como texto, nunca como HTML.
+      const globo = document.createElement("span");
+      globo.textContent = `${p.lugar} · ${p.cuando}`;
+      marcador.bindPopup(globo);
+    });
   }
 
   // ---------- Compartir (botón en la tarjeta y en la barra del celular) ----------

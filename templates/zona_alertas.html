@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Mi zona de alertas{% endblock %}
+
+{% block estilos_extra %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-alerta">
+  <div class="container py-4">
+    <span class="etiqueta-alerta"><i class="bi bi-bell"></i> Alerta Patitas</span>
+    <h1 class="titulo-pagina mt-2 mb-1">Mi zona de alertas</h1>
+    <p class="mb-0">Te avisaremos cuando se pierda una mascota a {{ radio_km }} km o menos de tu zona.</p>
+  </div>
+</section>
+
+<div class="container mt-4">
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <form method="post" class="tarjeta p-4" novalidate>
+        {{ c.csrf() }}
+        <h2 class="h6">Elige tu zona</h2>
+        <p class="small texto-suave">Puede ser tu colonia, tu trabajo o la escuela. No tiene que ser tu casa.</p>
+        <div class="mapa-selector" data-selector-mapa data-lat-input="z-latitud" data-lng-input="z-longitud"
+             data-radio-km="{{ radio_km }}" data-boton-ubicacion="z-usar-ubicacion" data-estado="z-estado-mapa"
+             role="application" aria-label="Mapa para elegir tu zona de alertas"></div>
+        <button type="button" class="btn btn-contorno w-100 mt-2" id="z-usar-ubicacion"><i class="bi bi-crosshair"></i> Usar mi ubicación</button>
+        <p class="ayuda" id="z-estado-mapa" role="status">
+          {% if zona %}Tu zona actual está marcada. Toca otro lugar para cambiarla.{% else %}Toca el mapa para marcar tu zona.{% endif %}
+        </p>
+        <input type="hidden" name="latitud" id="z-latitud" value="{{ zona.latitud if zona else '' }}">
+        <input type="hidden" name="longitud" id="z-longitud" value="{{ zona.longitud if zona else '' }}">
+
+        <div class="form-check form-switch mt-3">
+          <input class="form-check-input" type="checkbox" role="switch" name="acepta_alertas" value="si" id="z-acepta"
+                 {{ 'checked' if (not zona or zona.acepta_alertas) }}>
+          <label class="form-check-label" for="z-acepta">Quiero recibir alertas de mascotas perdidas cerca de mi zona</label>
+        </div>
+        <button class="btn btn-naranja w-100 mt-4" type="submit">Guardar mi zona</button>
+      </form>
+
+      {% if zona %}
+      <form method="post" class="mt-3">
+        {{ c.csrf() }}
+        <input type="hidden" name="accion" value="borrar">
+        <button class="btn btn-link texto-suave p-0" type="submit"><i class="bi bi-trash"></i> Borrar mi zona y dejar de recibir alertas</button>
+      </form>
+      {% endif %}
+    </div>
+
+    <div class="col-lg-5">
+      <div class="tarjeta p-4">
+        <h2 class="h6"><i class="bi bi-shield-lock text-salvia"></i> Tu privacidad</h2>
+        <ul class="small mb-0">
+          <li>Guardamos tu zona de forma aproximada (≈ 1 km), nunca tu dirección exacta.</li>
+          <li>Nadie más puede ver tu zona: solo se usa para calcular si una alerta está cerca.</li>
+          <li>Patitas no rastrea tu ubicación. "Usar mi ubicación" solo lee tu posición una vez, cuando tú lo pides.</li>
+          <li>Puedes cambiarla o borrarla cuando quieras.</li>
+        </ul>
+      </div>
+      <div class="tarjeta p-4 mt-4">
+        <h2 class="h6"><i class="bi bi-bell text-naranja"></i> ¿Dónde veré las alertas?</h2>
+        <p class="small mb-0">En la campana <i class="bi bi-bell"></i> del menú. Las notificaciones al celular aunque Patitas esté cerrada llegarán más adelante.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="{{ url_for('static', filename='js/mapa_selector.js') }}"></script>
+{% endblock %}

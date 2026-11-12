@@ -65,6 +65,7 @@ class SimuladorSupabase:
         self.correos = []           # correos "enviados"
         self.peticiones = []        # registro de todo lo que llegó
         self.dura_token = 3600
+        self.falla_correo = False   # simula un SMTP mal configurado
 
     # ------------------------------------------------------------------ util
     def cliente_httpx(self):
@@ -132,24 +133,35 @@ class SimuladorSupabase:
     # ------------------------------------------------------------- entrada
     def manejar(self, peticion):
         url = urlparse(str(peticion.url))
-        cuerpo = json.loads(peticion.content) if peticion.content else {}
+        es_json = "json" in peticion.headers.get("content-type", "") or not url.path.startswith("/storage/")
+        try:
+            cuerpo = json.loads(peticion.content) if (peticion.content and es_json) else {}
+        except ValueError:
+            cuerpo = {}
         consulta = {k: v[0] for k, v in parse_qs(url.query).items()}
         autorizacion = peticion.headers.get("authorization", "").removeprefix("Bearer ").strip()
         self.peticiones.append({"metodo": peticion.method, "ruta": url.path, "consulta": consulta,
                                 "cuerpo": cuerpo, "token": autorizacion,
-                                "apikey": peticion.headers.get("apikey")})
-        if peticion.headers.get("apikey") != CLAVE_PUBLICA:
+                                "apikey": peticion.headers.get("apikey") or peticion.headers.get("apiKey")})
+        if self.peticiones[-1]["apikey"] != CLAVE_PUBLICA:
             return self._error(401, "no_authorization", "Invalid API key")
+        if url.path.startswith("/storage/v1/"):
+            return self._storage(peticion, url.path[len("/storage/v1/"):], cuerpo, autorizacion)
         if url.path.startswith("/auth/v1/"):
             return self._auth(peticion.method, url.path[len("/auth/v1/"):], consulta, cuerpo, autorizacion)
         if url.path.startswith("/rest/v1/"):
             return self._rest(peticion.method, url.path[len("/rest/v1/"):], consulta, cuerpo, autorizacion)
         return self._error(404, "not_found", "Ruta desconocida")
 
+    def _storage(self, peticion, ruta, cuerpo, token):
+        return self._error(404, "not_found", "Storage no simulado")
+
     # ---------------------------------------------------------------- auth
     def _auth(self, metodo, ruta, consulta, cuerpo, token):
         if metodo == "POST" and ruta == "signup":
             correo = cuerpo["email"]
+            if self.falla_correo:
+                return self._error(500, "unexpected_failure", "Error sending confirmation email")
             if correo in self.usuarios:
                 # Supabase no revela que el correo existe: devuelve un usuario falso.
                 falso = {"id": str(uuid.uuid4()), "email": correo, "confirmado": False, "data": {}}

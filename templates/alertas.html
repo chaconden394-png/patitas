@@ -34,7 +34,13 @@
     <div class="col-md-6">
       <div class="tarjeta p-4 h-100">
         <h2 class="h6"><i class="bi bi-bell text-naranja"></i> Recibe alertas de tu zona</h2>
-        <p class="small texto-suave mb-0">Al crear tu cuenta podrás elegir tu zona (tu colonia o un punto en el mapa) y aceptar recibir alertas. Patitas no rastrea tu ubicación: solo usa la zona que tú elijas, guardada de forma aproximada.</p>
+        {% if zona %}
+        <p class="small texto-suave">{{ 'Recibes' if zona.acepta_alertas else 'Desactivaste las' }} alertas de mascotas perdidas a {{ radio_km }} km o menos de tu zona.</p>
+        <a href="{{ url_for('zona_alertas') }}" class="btn btn-contorno">Cambiar mi zona</a>
+        {% else %}
+        <p class="small texto-suave">Elige tu zona (tu colonia o un punto en el mapa) y te avisaremos cuando se pierda una mascota cerca. Patitas no rastrea tu ubicación.</p>
+        <a href="{{ url_for('zona_alertas') }}" class="btn btn-naranja">Elegir mi zona</a>
+        {% endif %}
       </div>
     </div>
     <div class="col-md-6">
