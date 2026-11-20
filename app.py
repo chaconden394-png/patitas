@@ -7,7 +7,7 @@ Para ejecutar en Codespaces:
 """
 import os
 
-from flask import Flask, abort, render_template, request, session
+from flask import Flask, abort, redirect, render_template, request, session, url_for
 
 from config import Config
 from services import alertas as servicio_alertas
@@ -17,6 +17,7 @@ from services.estados import ESTADOS
 from services.seguridad import token_csrf, verificar_csrf
 from services.sesion import usuario_actual
 from rutas_alertas import registrar_rutas_alertas
+from rutas_animales import registrar_rutas_animales
 from rutas_cuentas import registrar_rutas_cuentas
 
 app = Flask(__name__)
@@ -82,7 +83,17 @@ def leer_filtros():
         valor = request.args.get(campo, "").strip().lower()
         if valor in permitidos:
             filtros[campo] = valor
+    if request.args.get("edad") in servicio.EDADES:
+        filtros["edad"] = request.args["edad"]
+    for casilla in servicio.CASILLAS:          # "solo los que…": ?vacunado=si
+        if request.args.get(casilla) == "si":
+            filtros[casilla] = "si"
     return filtros
+
+
+def leer_pagina():
+    valor = request.args.get("pagina", "1")
+    return int(valor) if valor.isdigit() and 1 <= int(valor) <= 500 else 1
 
 
 # ---------------------------------------------------------------------------
@@ -98,8 +109,14 @@ def inicio():
 @app.route("/adoptar")
 def catalogo():
     filtros = leer_filtros()
-    return render_template("catalogo.html", animales=servicio.listar_catalogo(filtros),
-                           filtros=filtros, opciones=FILTROS_PERMITIDOS)
+    pagina = leer_pagina()
+    animales, total = servicio.listar_catalogo(filtros, pagina)
+    paginas = max(1, -(-total // servicio.POR_PAGINA))
+    if pagina > paginas:   # p. ej. ?pagina=9 cuando solo hay 2
+        return redirect(url_for("catalogo", **filtros, pagina=paginas))
+    return render_template("catalogo.html", animales=animales, total=total, pagina_actual=pagina, paginas=paginas,
+                           filtros=filtros, opciones=FILTROS_PERMITIDOS,
+                           edades=servicio.EDADES, casillas=servicio.CASILLAS)
 
 
 @app.route("/animal/<animal_id>")
@@ -137,6 +154,9 @@ def acerca():
 
 # Registro, inicio de sesión, mi cuenta, etc. (Etapa 3)
 registrar_rutas_cuentas(app)
+
+# Mi panel: mis animales, fotos y mi refugio (Etapa 4)
+registrar_rutas_animales(app)
 
 
 @app.route("/privacidad")

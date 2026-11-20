@@ -13,19 +13,39 @@
   </nav>
 
   <div class="row g-4">
+    <!-- Fotos -->
     <div class="col-lg-6">
-      <div class="tarjeta overflow-hidden">{{ c.foto_animal(animal, "foto-detalle") }}</div>
+      {% if animal.fotos %}
+        <div class="tarjeta overflow-hidden">
+          <img id="foto-grande" src="{{ animal.fotos[0].url }}" alt="Fotografía de {{ animal.nombre }}" class="foto-animal foto-detalle">
+        </div>
+        {% if animal.fotos|length > 1 %}
+        <div class="galeria-miniaturas mt-2" role="group" aria-label="Más fotos de {{ animal.nombre }}">
+          {% for f in animal.fotos %}
+          <button type="button" class="miniatura-boton" data-galeria="foto-grande" data-src="{{ f.url }}"
+                  aria-pressed="{{ 'true' if loop.first else 'false' }}" aria-label="Ver foto {{ loop.index }}">
+            <img src="{{ f.url }}" alt="" loading="lazy">
+          </button>
+          {% endfor %}
+        </div>
+        {% endif %}
+      {% else %}
+        <div class="tarjeta overflow-hidden">{{ c.foto_animal(animal, "foto-detalle") }}</div>
+      {% endif %}
     </div>
+
+    <!-- Datos -->
     <div class="col-lg-6">
       {{ c.insignia_estado(animal.estado) }}
       <h1 class="titulo-pagina mt-2">{{ animal.nombre }}</h1>
       <p class="texto-suave"><i class="bi bi-geo-alt"></i> {{ animal.zona }}, Tijuana (ubicación aproximada)</p>
-      <p class="lead">{{ animal.personalidad }}</p>
+      {% if animal.personalidad %}<p class="lead texto-con-saltos">{{ animal.personalidad }}</p>{% endif %}
 
       <div class="row g-2 my-3">
         {% set datos = [
           ('Especie', animal.especie|capitalize), ('Raza', animal.raza), ('Edad', animal.edad),
-          ('Tamaño', animal.tamano|capitalize), ('Sexo', animal.sexo|capitalize), ('Energía', animal.energia|capitalize),
+          ('Tamaño', animal.tamano|capitalize), ('Sexo', {'desconocido': 'No se sabe'}.get(animal.sexo, animal.sexo|capitalize)),
+          ('Energía', (animal.energia or 'No indicada')|capitalize),
           ('Vacunas', 'Al día' if animal.vacunado else 'Pendientes'), ('Esterilización', 'Sí' if animal.esterilizado else 'No')] %}
         {% for etiqueta, valor in datos %}
         <div class="col-6 col-sm-3">
@@ -34,6 +54,45 @@
         {% endfor %}
       </div>
 
+      {% set convive = [('Niñas y niños', animal.convive_ninos), ('Perros', animal.convive_perros), ('Gatos', animal.convive_gatos)] %}
+      <h2 class="h6 mt-4">Convivencia</h2>
+      <ul class="list-unstyled d-flex flex-wrap gap-2 mb-3">
+        {% for texto, valor in convive %}
+        <li class="chip-convive {{ 'si' if valor == true else ('no' if valor == false else 'nose') }}">
+          <i class="bi {{ 'bi-check-circle-fill' if valor == true else ('bi-x-circle-fill' if valor == false else 'bi-question-circle') }}" aria-hidden="true"></i>
+          {{ texto }}: {{ 'sí' if valor == true else ('no' if valor == false else 'no se sabe') }}
+        </li>
+        {% endfor %}
+      </ul>
+
+      {% for titulo, texto in [('Salud', animal.enfermedades), ('Necesidades especiales', animal.necesidades), ('Requisitos para adoptar', animal.requisitos)] %}
+        {% if texto %}
+        <h2 class="h6 mt-3">{{ titulo }}</h2>
+        <p class="texto-con-saltos">{{ texto }}</p>
+        {% endif %}
+      {% endfor %}
+
+      {% if animal.publicador %}
+      <div class="tarjeta p-3 my-3 d-flex gap-3 align-items-start publicador">
+        <span class="avatar-inicial" aria-hidden="true">{{ (animal.refugio.nombre if animal.refugio else animal.publicador.nombre)[:1]|upper }}</span>
+        <div class="min-w-0">
+          <p class="small texto-suave mb-0">Lo cuida</p>
+          {% if animal.refugio %}
+            <strong class="d-block">{{ animal.refugio.nombre }}</strong>
+            <span class="small">Publicado por <a href="{{ url_for('perfil_publico', usuario_id=animal.publicador.id) }}">{{ animal.publicador.nombre }}</a></span>
+          {% else %}
+            <a class="fw-semibold d-block" href="{{ url_for('perfil_publico', usuario_id=animal.publicador.id) }}">{{ animal.publicador.nombre }}</a>
+            <span class="small">{{ {'rescatista': 'Rescatista', 'refugio': 'Refugio'}.get(animal.publicador.tipo, 'Cuenta de Patitas') }}</span>
+          {% endif %}
+          <p class="mb-0 mt-2">{{ c.sello_verificacion(animal.verificado) }}</p>
+          {% if not animal.verificado %}
+          <p class="small texto-suave mb-0 mt-2">El equipo de Patitas todavía no revisa a esta cuenta. Antes de adoptar, conoce al animal en persona,
+            pide ver sus documentos de salud y nunca pages por adelantado.</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
       {% if animal.estado in ['perdido', 'encontrado'] %}
         <button class="btn btn-naranja btn-lg w-100" disabled>Tengo información sobre {{ animal.nombre if animal.nombre != 'Sin nombre' else 'este animal' }}</button>
       {% elif animal.estado == 'adoptado' %}
@@ -41,7 +100,9 @@
       {% else %}
         <button class="btn btn-naranja btn-lg w-100" disabled>Solicitar adopción</button>
       {% endif %}
-      {{ c.aviso_etapa("Las solicitudes y el contacto con el responsable se activarán cuando existan cuentas verificadas (Etapas 3 y 5).") }}
+      {% if animal.estado != 'adoptado' %}
+      {{ c.aviso_etapa("Las solicitudes de adopción y los mensajes con quien lo cuida se activarán en la Etapa 5.") }}
+      {% endif %}
     </div>
   </div>
 </div>

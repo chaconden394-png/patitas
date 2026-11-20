@@ -1,5 +1,5 @@
 """
-Fotos que suben las personas (por ahora, las de Alerta Patitas).
+Fotos que suben las personas: alertas (fotos-alertas) y animales en adopción (fotos-animales).
 
 Antes de guardar una foto, la app:
   1. Comprueba que de verdad sea una imagen (JPEG, PNG o WebP).
@@ -18,7 +18,8 @@ MAX_BYTES_ENTRADA = 8 * 1024 * 1024   # 8 MB (la foto original)
 MAX_BYTES_SALIDA = 5 * 1024 * 1024    # 5 MB (límite del contenedor en Supabase)
 MAX_LADO = 1600
 FORMATOS = {"JPEG", "PNG", "WEBP", "MPO"}  # MPO: JPEG de algunas cámaras
-BUCKET = "fotos-alertas"
+BUCKET = "fotos-alertas"            # fotos de Alerta Patitas
+BUCKET_ANIMALES = "fotos-animales"  # fotos de animales en adopción (Etapa 4)
 
 # Protección contra imágenes "bomba" (enormes al abrirse)
 Image.MAX_IMAGE_PIXELS = 40_000_000
@@ -30,10 +31,10 @@ class ErrorFoto(Exception):
         self.mensaje = mensaje
 
 
-def limpiar_foto(datos):
+def limpiar_foto(datos, mensaje_vacio="Sube una foto de tu mascota."):
     """Devuelve la foto como JPEG limpio (sin EXIF/GPS) o lanza ErrorFoto."""
     if not datos:
-        raise ErrorFoto("Sube una foto de tu mascota.")
+        raise ErrorFoto(mensaje_vacio)
     if len(datos) > MAX_BYTES_ENTRADA:
         raise ErrorFoto("La foto pesa más de 8 MB. Elige una más ligera.")
     try:
@@ -73,7 +74,7 @@ def nueva_ruta(usuario_id):
     return f"{usuario_id}/{uuid.uuid4()}.jpg"
 
 
-def url_publica(supabase_url, ruta):
+def url_publica(supabase_url, ruta, contenedor=BUCKET):
     if not ruta:
         return None
-    return f"{supabase_url}/storage/v1/object/public/{BUCKET}/{ruta}"
+    return f"{supabase_url}/storage/v1/object/public/{contenedor}/{ruta}"

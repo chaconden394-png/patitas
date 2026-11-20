@@ -12,7 +12,7 @@ from services import autenticacion as auth
 from services.autenticacion import ErrorCuenta
 from services.seguridad import demasiados_intentos, destino_seguro, olvidar_intentos
 from services.sesion import (admin_requerido, actualizar_nombre_en_sesion, borrar_sesion,
-                             guardar_sesion, login_requerido, tipo_requerido, token_actual,
+                             guardar_sesion, login_requerido, token_actual,
                              usuario_actual)
 from services.supabase_cliente import supabase_configurado
 
@@ -244,10 +244,7 @@ def registrar_rutas_cuentas(app):
     # -----------------------------------------------------------------------
     # Paneles con permisos por rol
     # -----------------------------------------------------------------------
-    @app.route("/panel")
-    @tipo_requerido("refugio", "rescatista")
-    def panel():
-        return render_template("panel.html")
+    # /panel y sus secciones están en rutas_animales.py (Etapa 4)
 
     @app.route("/admin")
     @admin_requerido

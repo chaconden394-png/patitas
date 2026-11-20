@@ -4,18 +4,65 @@
 
 {% block contenido %}
 <section class="encabezado-pagina">
-  <div class="container py-4">
-    <h1 class="titulo-pagina mb-1">Mi panel</h1>
-    <p class="mb-0">Aquí gestionarás tus animales, solicitudes y campañas.</p>
+  <div class="container py-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <h1 class="titulo-pagina mb-1">Mi panel</h1>
+      <p class="mb-0">Publica a tus animales y mantén su información al día.</p>
+    </div>
+    <a href="{{ url_for('publicar_animal') }}" class="btn btn-naranja"><i class="bi bi-plus-lg"></i> Publicar un animal</a>
   </div>
 </section>
+
 <div class="container mt-4">
-  {{ c.aviso_etapa("Esta sección solo la ven refugios y rescatistas. Sus herramientas llegan en las próximas etapas.") }}
-  <div class="row g-4 mt-1">
-    {% for icono, titulo, etapa in [('bi-heart', 'Mis animales', 'Etapa 4'), ('bi-clipboard-check', 'Solicitudes de adopción', 'Etapa 5'),
-                                    ('bi-chat-heart', 'Mensajes', 'Etapa 5'), ('bi-cash-coin', 'Campañas y donaciones', 'Etapa 8')] %}
+  {% if usuario_sesion.tipo_cuenta == 'refugio' %}
+    {% if not refugio %}
+    <div class="tarjeta p-3 mb-4 d-flex flex-wrap gap-3 align-items-center">
+      <i class="bi bi-buildings fs-3 text-salvia"></i>
+      <span class="flex-grow-1">Registra los datos de tu refugio para que aparezca en la sección <strong>Refugios</strong> y puedas publicar a su nombre.</span>
+      <a class="btn btn-salvia" href="{{ url_for('mi_refugio') }}">Registrar mi refugio</a>
+    </div>
+    {% elif refugio.estado_verificacion != 'verificado' %}
+    <div class="tarjeta p-3 mb-4 d-flex flex-wrap gap-3 align-items-center">
+      <i class="bi bi-hourglass-split fs-3 text-naranja"></i>
+      <span class="flex-grow-1"><strong>{{ refugio.nombre }}</strong>: {{ estados_refugio[refugio.estado_verificacion] }}.
+        {% if refugio.estado_verificacion == 'pendiente' %}Mientras tanto tus animales muestran «Sin verificar».{% endif %}</span>
+      <a class="btn btn-contorno" href="{{ url_for('mi_refugio') }}">Ver mi refugio</a>
+    </div>
+    {% endif %}
+  {% endif %}
+
+  <div class="row g-3 mb-4">
+    {% for numero, texto, icono in [(conteo.publicados, 'Buscan hogar', 'bi-house-heart'), (conteo.en_proceso, 'En proceso de adopción', 'bi-hourglass-split'), (conteo.adoptados, 'Adoptados', 'bi-heart-fill')] %}
+    <div class="col-4">
+      <div class="tarjeta p-3 text-center h-100">
+        <i class="bi {{ icono }} text-salvia fs-4" aria-hidden="true"></i>
+        <strong class="d-block fs-3 lh-1 mt-1">{{ numero }}</strong>
+        <span class="small texto-suave">{{ texto }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="row g-4">
     <div class="col-sm-6 col-lg-3">
-      <div class="tarjeta p-4 h-100">
+      <a href="{{ url_for('mis_animales') }}" class="tarjeta p-4 h-100 d-block tarjeta-enlace">
+        <span class="icono-circulo"><i class="bi bi-heart"></i></span>
+        <h2 class="h6 mt-3 mb-1">Mis animales</h2>
+        <p class="small texto-suave mb-0">Publicar, editar, fotos y estado.</p>
+      </a>
+    </div>
+    {% if usuario_sesion.tipo_cuenta == 'refugio' %}
+    <div class="col-sm-6 col-lg-3">
+      <a href="{{ url_for('mi_refugio') }}" class="tarjeta p-4 h-100 d-block tarjeta-enlace">
+        <span class="icono-circulo"><i class="bi bi-buildings"></i></span>
+        <h2 class="h6 mt-3 mb-1">Mi refugio</h2>
+        <p class="small texto-suave mb-0">Datos públicos y dirección privada.</p>
+      </a>
+    </div>
+    {% endif %}
+    {% for icono, titulo, etapa in [('bi-clipboard-check', 'Solicitudes de adopción', 'Etapa 5'), ('bi-chat-heart', 'Mensajes', 'Etapa 5'), ('bi-cash-coin', 'Campañas y donaciones', 'Etapa 8')] %}
+    <div class="col-sm-6 col-lg-3">
+      <div class="tarjeta p-4 h-100 tarjeta-proxima">
         <span class="icono-circulo"><i class="bi {{ icono }}"></i></span>
         <h2 class="h6 mt-3 mb-1">{{ titulo }}</h2>
         <p class="small texto-suave mb-0">Disponible en la {{ etapa }}.</p>
@@ -23,5 +70,14 @@
     </div>
     {% endfor %}
   </div>
+
+  {% if recientes %}
+  <h2 class="h5 mt-5 mb-3">Publicados recientemente</h2>
+  <div class="row g-4">
+    {% for animal in recientes %}
+      <div class="col-12 col-sm-6 col-xl-4">{{ c.tarjeta_animal(animal) }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

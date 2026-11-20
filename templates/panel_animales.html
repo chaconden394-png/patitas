@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Mis animales{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <nav class="small mb-1"><a href="{{ url_for('panel') }}"><i class="bi bi-arrow-left"></i> Mi panel</a></nav>
+      <h1 class="titulo-pagina mb-1">Mis animales</h1>
+      <p class="mb-0">{{ animales|length }} publicado{{ 's' if animales|length != 1 }}.</p>
+    </div>
+    <a href="{{ url_for('publicar_animal') }}" class="btn btn-naranja"><i class="bi bi-plus-lg"></i> Publicar un animal</a>
+  </div>
+</section>
+
+<div class="container mt-4" style="max-width: 960px;">
+  {% if animales %}
+  <ul class="list-unstyled d-grid gap-3 mb-0">
+    {% for a in animales %}
+    <li class="tarjeta p-3 fila-animal">
+      <a class="miniatura" href="{{ url_for('detalle_animal', animal_id=a.id) }}" aria-label="Ver la ficha pública de {{ a.nombre }}">{{ c.foto_animal(a) }}</a>
+      <div class="flex-grow-1 min-w-0">
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <strong>{{ a.nombre }}</strong>
+          {{ c.insignia_estado(a.estado) }}
+          {% if a.oculto %}<span class="insignia insignia-pendiente"><i class="bi bi-eye-slash"></i> Oculto por moderación</span>{% endif %}
+        </div>
+        <span class="d-block small texto-suave">{{ a.especie|capitalize }} · {{ a.edad }} · {{ a.zona }}</span>
+        <span class="d-block small {{ 'text-naranja fw-semibold' if not a.fotos else 'texto-suave' }}">
+          <i class="bi bi-camera"></i> {{ a.fotos|length }} de {{ max_fotos }} fotos{% if not a.fotos %} · ¡agrega al menos una!{% endif %}
+        </span>
+      </div>
+      <div class="acciones-animal">
+        <form method="post" action="{{ url_for('estado_animal', animal_id=a.id) }}" class="d-flex gap-2">
+          {{ c.csrf() }}
+          <label class="visually-hidden" for="estado-{{ a.id }}">Estado de {{ a.nombre }}</label>
+          <select id="estado-{{ a.id }}" name="estado" class="form-select form-select-sm">
+            {% for e in estados_publicables %}
+            <option value="{{ e }}" {{ 'selected' if a.estado == e }}>{{ ESTADOS[e].texto }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-sm btn-contorno" type="submit">Cambiar</button>
+        </form>
+        <div class="d-flex flex-wrap gap-2 mt-2">
+          <a class="btn btn-sm btn-salvia" href="{{ url_for('editar_animal', animal_id=a.id) }}"><i class="bi bi-pencil"></i> Editar</a>
+          <a class="btn btn-sm btn-contorno" href="{{ url_for('fotos_animal', animal_id=a.id) }}"><i class="bi bi-camera"></i> Fotos</a>
+          <form method="post" action="{{ url_for('borrar_animal', animal_id=a.id) }}"
+                data-confirmar="¿Borrar la publicación de {{ a.nombre }} y sus fotos? No se puede deshacer.">
+            {{ c.csrf() }}
+            <button class="btn btn-sm btn-borrar" type="submit"><i class="bi bi-trash"></i> Borrar</button>
+          </form>
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  <p class="small texto-suave mt-3">Si un animal ya encontró hogar, márcalo como <strong>Adoptado</strong> en lugar de borrarlo: así queda la historia de su rescate.</p>
+  {% else %}
+  <div class="tarjeta p-5 text-center">
+    <i class="bi bi-house-heart fs-1 text-salvia"></i>
+    <p class="mt-2 mb-3">Todavía no publicas animales.</p>
+    <a href="{{ url_for('publicar_animal') }}" class="btn btn-naranja">Publicar el primero</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

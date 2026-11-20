@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}{{ 'Editar a ' ~ animal.nombre if animal else 'Publicar un animal' }}{% endblock %}
+
+{% macro seleccion(id, nombre, etiqueta, opciones, valor, vacio="Elige…", requerido=true) %}
+  <label for="{{ id }}" class="form-label small fw-semibold">{{ etiqueta }}</label>
+  <select id="{{ id }}" name="{{ nombre }}" class="form-select" {{ 'required' if requerido }}>
+    {% if vacio %}<option value="">{{ vacio }}</option>{% endif %}
+    {% for v, t in opciones.items() %}
+    <option value="{{ v }}" {{ 'selected' if valor == v }}>{{ t }}</option>
+    {% endfor %}
+  </select>
+{% endmacro %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4">
+    <nav class="small mb-1"><a href="{{ url_for('mis_animales') }}"><i class="bi bi-arrow-left"></i> Mis animales</a></nav>
+    <h1 class="titulo-pagina mb-1">{{ 'Editar a ' ~ animal.nombre if animal else 'Publicar un animal' }}</h1>
+    <p class="mb-0">{{ 'Los cambios se ven de inmediato en su ficha.' if animal else 'Después de guardar podrás agregar hasta 3 fotos.' }}</p>
+  </div>
+</section>
+
+<div class="container mt-4" style="max-width: 860px;">
+  <form method="post" class="tarjeta p-4" novalidate aria-label="Datos del animal">
+    {{ c.csrf() }}
+    <h2 class="h6 mb-3">1. ¿Quién es?</h2>
+    <div class="row g-3">
+      <div class="col-sm-6">
+        <label for="f-nombre" class="form-label small fw-semibold">Nombre</label>
+        <input id="f-nombre" name="nombre" class="form-control" required maxlength="60" placeholder="Canela"
+               value="{{ datos.get('nombre', '') }}">
+      </div>
+      <div class="col-sm-6">{{ seleccion("f-especie", "especie", "Especie", especies, datos.get('especie'), vacio=None) }}</div>
+      <div class="col-sm-4">{{ seleccion("f-sexo", "sexo", "Sexo", sexos, datos.get('sexo')) }}</div>
+      <div class="col-sm-4">{{ seleccion("f-tamano", "tamano", "Tamaño", tamanos, datos.get('tamano')) }}</div>
+      <div class="col-sm-4">{{ seleccion("f-energia", "energia", "Energía", energias, datos.get('energia'), vacio="No sé", requerido=false) }}</div>
+      <div class="col-sm-6">
+        <label for="f-raza" class="form-label small fw-semibold">Raza</label>
+        <input id="f-raza" name="raza" class="form-control" maxlength="60" placeholder="Mestizo / No especificada"
+               value="{{ datos.get('raza', '') }}">
+      </div>
+      <div class="col-sm-6">
+        <span class="form-label small fw-semibold d-block">Edad aproximada</span>
+        <div class="d-flex gap-2 align-items-center">
+          <label class="visually-hidden" for="f-anios">Años</label>
+          <input id="f-anios" name="edad_anios" class="form-control" inputmode="numeric" maxlength="2" placeholder="2"
+                 value="{{ datos.get('edad_anios', '') }}" style="max-width: 5rem;"><span class="small">años</span>
+          <label class="visually-hidden" for="f-meses">Meses</label>
+          <input id="f-meses" name="edad_meses" class="form-control" inputmode="numeric" maxlength="2" placeholder="0"
+                 value="{{ datos.get('edad_meses', '') }}" style="max-width: 5rem;"><span class="small">meses</span>
+        </div>
+        <div class="form-check mt-1">
+          <input class="form-check-input" type="checkbox" id="f-edad-desconocida" name="edad_desconocida" value="si"
+                 data-desactiva="f-anios,f-meses" {{ 'checked' if datos.get('edad_desconocida') == 'si' }}>
+          <label class="form-check-label small" for="f-edad-desconocida">No sé su edad</label>
+        </div>
+      </div>
+      <div class="col-12">
+        <label for="f-personalidad" class="form-label small fw-semibold">Personalidad e historia</label>
+        <textarea id="f-personalidad" name="personalidad" class="form-control" rows="4" maxlength="1000"
+                  placeholder="Cariñosa y tranquila. La rescatamos en Otay…">{{ datos.get('personalidad', '') }}</textarea>
+      </div>
+    </div>
+
+    <h2 class="h6 mt-4 mb-3">2. Convivencia y salud</h2>
+    <div class="row g-3">
+      {% for campo, texto in [('convive_ninos', '¿Convive con niñas y niños?'), ('convive_perros', '¿Con perros?'), ('convive_gatos', '¿Con gatos?')] %}
+      <div class="col-sm-4">{{ seleccion("f-" ~ campo, campo, texto, {'si': 'Sí', 'no': 'No'}, datos.get(campo), vacio="No se sabe", requerido=false) }}</div>
+      {% endfor %}
+      <div class="col-12 d-flex flex-wrap gap-4">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="f-vacunado" name="vacunado" value="si" {{ 'checked' if datos.get('vacunado') == 'si' }}>
+          <label class="form-check-label" for="f-vacunado">Vacunas al día</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="f-esterilizado" name="esterilizado" value="si" {{ 'checked' if datos.get('esterilizado') == 'si' }}>
+          <label class="form-check-label" for="f-esterilizado">Esterilizado</label>
+        </div>
+      </div>
+      <div class="col-12">
+        <label for="f-enfermedades" class="form-label small fw-semibold">Enfermedades o tratamientos (opcional)</label>
+        <textarea id="f-enfermedades" name="enfermedades_conocidas" class="form-control" rows="2" maxlength="1000">{{ datos.get('enfermedades_conocidas', '') }}</textarea>
+      </div>
+      <div class="col-12">
+        <label for="f-necesidades" class="form-label small fw-semibold">Necesidades especiales (opcional)</label>
+        <textarea id="f-necesidades" name="necesidades_especiales" class="form-control" rows="2" maxlength="1000"
+                  placeholder="Necesita patio, comida especial…">{{ datos.get('necesidades_especiales', '') }}</textarea>
+      </div>
+    </div>
+
+    <h2 class="h6 mt-4 mb-3">3. Adopción</h2>
+    <div class="row g-3">
+      <div class="col-sm-6">
+        <label for="f-zona" class="form-label small fw-semibold">Colonia o zona</label>
+        <input id="f-zona" name="zona" class="form-control" required maxlength="80" placeholder="Otay"
+               value="{{ datos.get('zona', '') }}" aria-describedby="f-zona-ayuda">
+        <p class="ayuda mb-0" id="f-zona-ayuda">Solo la colonia. Nunca escribas la dirección exacta del refugio ni de una casa.</p>
+      </div>
+      <div class="col-sm-6">
+        <label for="f-estado" class="form-label small fw-semibold">Estado</label>
+        <select id="f-estado" name="estado" class="form-select" required>
+          {% for e in estados_publicables %}
+          <option value="{{ e }}" {{ 'selected' if datos.get('estado') == e }}>{{ ESTADOS[e].texto }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% if refugios %}
+      <div class="col-12">
+        <label for="f-refugio" class="form-label small fw-semibold">Publicar a nombre de</label>
+        <select id="f-refugio" name="refugio_id" class="form-select">
+          <option value="">Solo mi cuenta</option>
+          {% for r in refugios %}
+          <option value="{{ r.id }}" {{ 'selected' if datos.get('refugio_id') == r.id }}>{{ r.nombre }}{{ ' (pendiente de verificación)' if r.estado_verificacion == 'pendiente' }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+      <div class="col-12">
+        <label for="f-requisitos" class="form-label small fw-semibold">Requisitos para adoptar (opcional)</label>
+        <textarea id="f-requisitos" name="requisitos_adopcion" class="form-control" rows="2" maxlength="1000"
+                  placeholder="Visita previa, compromiso de esterilización…">{{ datos.get('requisitos_adopcion', '') }}</textarea>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mt-4">
+      <button class="btn btn-naranja" type="submit">{{ 'Guardar cambios' if animal else 'Publicar y agregar fotos' }}</button>
+      <a class="btn btn-contorno" href="{{ url_for('mis_animales') }}">Cancelar</a>
+    </div>
+    <p class="small texto-suave mt-3 mb-0">Publica solo animales que cuidas tú o tu refugio, con datos verdaderos. Las publicaciones engañosas se ocultan.</p>
+  </form>
+</div>
+{% endblock %}

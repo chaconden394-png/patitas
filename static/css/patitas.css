@@ -309,3 +309,40 @@ details > summary::-webkit-details-marker { display: none; }
 .pie a:hover { opacity: 1; color: var(--naranja); }
 .pie li { margin-bottom: .35rem; }
 .pie .marca { color: var(--verde-claro) !important; }
+
+/* ---------- Etapa 4: animales y fotos ---------- */
+.sello { display: inline-flex; align-items: center; gap: .3rem; font-size: .78rem; font-weight: 700; border-radius: 999px; padding: .15rem .6rem; }
+.sello-verificado { background: #E3EEE2; color: #3E6544; }
+.sello-sin-verificar { background: #F1ECDF; color: #6B5A35; }
+.texto-con-saltos { white-space: pre-line; }
+
+.galeria-miniaturas { display: flex; gap: .5rem; }
+.miniatura-boton { width: 76px; height: 76px; padding: 0; border: 3px solid transparent; border-radius: var(--radio-chico); overflow: hidden; background: none; }
+.miniatura-boton img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.miniatura-boton[aria-pressed="true"] { border-color: var(--naranja); }
+
+.chip-convive { display: inline-flex; align-items: center; gap: .35rem; border-radius: 999px; padding: .3rem .8rem; font-size: .88rem; font-weight: 600; }
+.chip-convive.si { background: #E3EEE2; color: #3E6544; }
+.chip-convive.no { background: #FFE4D6; color: #A3410F; }
+.chip-convive.nose { background: #F1ECDF; color: var(--tinta-suave); }
+
+.fila-animal { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.fila-animal .miniatura { width: 84px; height: 84px; }
+.acciones-animal { flex: 1 1 260px; max-width: 340px; }
+@media (max-width: 575.98px) { .acciones-animal { max-width: none; } }
+.btn-borrar { border: 2px solid #E7B9AE; color: #A3410F; background: transparent; }
+.btn-borrar:hover { background: #A3410F; border-color: #A3410F; color: var(--blanco); }
+.foto-previa-mini { width: 96px; height: 96px; object-fit: cover; border-radius: var(--radio-chico); }
+.foto-gestion .foto-animal { aspect-ratio: 1 / 1; }
+
+a.tarjeta-enlace { color: inherit; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
+a.tarjeta-enlace:hover { transform: translateY(-3px); box-shadow: var(--sombra-hover); color: inherit; }
+.tarjeta-proxima { opacity: .7; }
+
+.paginacion-patitas .page-link { border-radius: 999px !important; margin: 0 .15rem; border: none; color: var(--salvia-oscuro); font-weight: 700; min-width: 2.4rem; text-align: center; }
+.paginacion-patitas .page-item.active .page-link { background: var(--salvia); color: var(--blanco); }
+.paginacion-patitas .page-item.disabled .page-link { background: transparent; color: var(--tinta-suave); }
+.publicador .avatar-inicial { flex-shrink: 0; }
+.acciones-animal .btn-salvia { border: 2px solid var(--salvia); }
+.form-check-input:checked { background-color: var(--salvia); border-color: var(--salvia); }
+.form-check-input:focus { border-color: var(--verde-claro); box-shadow: 0 0 0 .2rem rgba(107, 143, 113, .25); }

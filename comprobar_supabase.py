@@ -63,7 +63,8 @@ def main():
 
         paso(4, "Probando las consultas que usa la app")
         try:
-            print(f"  ✓ Catálogo: {len(servicio.listar_catalogo({}))} animales")
+            _, total = servicio.listar_catalogo({})
+            print(f"  ✓ Catálogo: {total} animales")
             print(f"  ✓ Perdidos y encontrados: {len(servicio.listar_perdidos_encontrados())}")
             print(f"  ✓ Refugios: {len(servicio.listar_refugios())}")
         except servicio.ErrorBaseDeDatos as error:
@@ -115,6 +116,20 @@ def main():
                 print("  ✗ Falta la migración 004. Ejecuta supabase/migraciones/004_alertas_parte_b.sql")
                 return 1
             print("  ✓ La migración 004 está instalada y protegida.")
+
+        paso(8, "Revisando animales y fotos (migración 005)")
+        try:
+            filas = obtener_cliente().table("bloqueos_publicacion").select("usuario_id").limit(1).execute().data
+            if filas:
+                print("  ✗ ¡PELIGRO! Un visitante puede ver los bloqueos. Revisa la migración 005.")
+                return 1
+            print("  ✓ La migración 005 está instalada y la lista de bloqueos está protegida.")
+        except Exception as error:
+            texto = str(error)
+            if "PGRST205" in texto or "Could not find the table" in texto:
+                print("  ✗ Falta la migración 005. Ejecuta supabase/migraciones/005_animales_fotos.sql")
+                return 1
+            print("  ✓ La migración 005 está instalada y la lista de bloqueos está protegida.")
 
     print("\nTodo listo: la app puede leer datos de Supabase.")
     return 0

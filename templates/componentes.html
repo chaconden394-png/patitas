@@ -43,9 +43,21 @@
         </div>
         <p class="texto-suave mb-2 small">{{ animal.especie|capitalize }} · {{ animal.edad }} · {{ animal.tamano|capitalize }}</p>
         <p class="small mb-0"><i class="bi bi-geo-alt text-salvia" aria-hidden="true"></i> {{ animal.zona }}, Tijuana</p>
+        {% if animal.verificado is defined %}
+        <p class="small mb-0 mt-2">{{ sello_verificacion(animal.verificado) }}</p>
+        {% endif %}
       </div>
     </a>
   </article>
+{% endmacro %}
+
+{# ¿Quien publicó está verificado por Patitas? (Etapa 4) #}
+{% macro sello_verificacion(verificado) %}
+  {% if verificado %}
+    <span class="sello sello-verificado"><i class="bi bi-patch-check-fill" aria-hidden="true"></i> Publicado por cuenta verificada</span>
+  {% else %}
+    <span class="sello sello-sin-verificar"><i class="bi bi-shield-exclamation" aria-hidden="true"></i> Sin verificar</span>
+  {% endif %}
 {% endmacro %}
 
 {# Aviso para funciones que aún no están conectadas #}

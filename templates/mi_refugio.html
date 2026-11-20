@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Mi refugio{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4">
+    <nav class="small mb-1"><a href="{{ url_for('panel') }}"><i class="bi bi-arrow-left"></i> Mi panel</a></nav>
+    <h1 class="titulo-pagina mb-1">{{ 'Mi refugio' if refugio else 'Registrar mi refugio' }}</h1>
+    <p class="mb-0">Los datos públicos aparecen en la sección Refugios. La dirección es privada.</p>
+  </div>
+</section>
+
+<div class="container mt-4" style="max-width: 760px;">
+  {% if refugio %}
+  <div class="tarjeta p-3 mb-4 d-flex gap-3 align-items-start">
+    {% if refugio.estado_verificacion == 'verificado' %}
+      <i class="bi bi-patch-check-fill fs-3 text-salvia"></i>
+      <p class="mb-0"><strong>Refugio verificado.</strong> Tus animales muestran la insignia de cuenta verificada.</p>
+    {% elif refugio.estado_verificacion == 'pendiente' %}
+      <i class="bi bi-hourglass-split fs-3 text-naranja"></i>
+      <p class="mb-0"><strong>Pendiente de verificación.</strong> Ya puedes publicar animales; mostrarán «Sin verificar» hasta que el equipo
+        de Patitas revise tu refugio. La revisión es manual: nada se aprueba en automático.</p>
+    {% else %}
+      <i class="bi bi-exclamation-octagon fs-3 text-alerta"></i>
+      <p class="mb-0"><strong>{{ estados_refugio[refugio.estado_verificacion] }}.</strong> Tu refugio no aparece en Patitas y no puedes publicar a su nombre.
+        Si crees que es un error, escríbenos.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <form method="post" class="tarjeta p-4" novalidate aria-label="Datos del refugio">
+    {{ c.csrf() }}
+    <h2 class="h6 mb-3">Datos públicos</h2>
+    <div class="row g-3">
+      <div class="col-12">
+        <label for="r-nombre" class="form-label small fw-semibold">Nombre del refugio o asociación</label>
+        <input id="r-nombre" name="nombre" class="form-control" required maxlength="100" value="{{ datos.get('nombre') or '' }}">
+      </div>
+      <div class="col-12">
+        <label for="r-descripcion" class="form-label small fw-semibold">¿Qué hacen?</label>
+        <textarea id="r-descripcion" name="descripcion" class="form-control" rows="3" maxlength="1000"
+                  placeholder="Rescatamos perros y gatos en situación de calle…">{{ datos.get('descripcion') or '' }}</textarea>
+      </div>
+      <div class="col-sm-6">
+        <label for="r-zona" class="form-label small fw-semibold">Colonia o zona</label>
+        <input id="r-zona" name="zona" class="form-control" required maxlength="80" placeholder="Otay" value="{{ datos.get('zona') or '' }}">
+      </div>
+      <div class="col-sm-6">
+        <label for="r-telefono" class="form-label small fw-semibold">Teléfono público (opcional)</label>
+        <input id="r-telefono" name="telefono_publico" class="form-control" inputmode="tel" maxlength="20"
+               placeholder="664 000 0000" value="{{ datos.get('telefono_publico') or '' }}">
+      </div>
+      <div class="col-12">
+        <label for="r-correo" class="form-label small fw-semibold">Correo público (opcional)</label>
+        <input id="r-correo" name="correo_publico" type="email" class="form-control" maxlength="120"
+               value="{{ datos.get('correo_publico') or '' }}">
+        <p class="ayuda mb-0">El teléfono y el correo públicos los podrá ver cualquiera. Usa los del refugio, no los personales.</p>
+      </div>
+    </div>
+
+    <h2 class="h6 mt-4 mb-2"><i class="bi bi-lock"></i> Dirección (privada)</h2>
+    <p class="small texto-suave">Solo la ven tú y los administradores de Patitas, para verificar el refugio. Nunca se muestra en la página.</p>
+    <label for="r-direccion" class="form-label small fw-semibold">Dirección completa (opcional)</label>
+    <input id="r-direccion" name="direccion" class="form-control" maxlength="200" value="{{ datos.get('direccion') or '' }}">
+
+    <div class="d-flex flex-wrap gap-2 mt-4">
+      <button class="btn btn-naranja" type="submit">{{ 'Guardar cambios' if refugio else 'Registrar refugio' }}</button>
+      <a class="btn btn-contorno" href="{{ url_for('panel') }}">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

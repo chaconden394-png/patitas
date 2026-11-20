@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% import "componentes.html" as c %}
+{% block titulo %}Fotos de {{ animal.nombre }}{% endblock %}
+
+{% block contenido %}
+<section class="encabezado-pagina">
+  <div class="container py-4">
+    <nav class="small mb-1"><a href="{{ url_for('mis_animales') }}"><i class="bi bi-arrow-left"></i> Mis animales</a></nav>
+    <h1 class="titulo-pagina mb-1">Fotos de {{ animal.nombre }}</h1>
+    <p class="mb-0">Hasta {{ max_fotos }} fotos. La primera es la que aparece en el catálogo.</p>
+  </div>
+</section>
+
+<div class="container mt-4" style="max-width: 860px;">
+  {% if animal.fotos %}
+  <div class="row g-3">
+    {% for f in animal.fotos %}
+    <div class="col-sm-4">
+      <figure class="tarjeta overflow-hidden h-100 mb-0 foto-gestion">
+        <img src="{{ f.url }}" alt="Foto {{ loop.index }} de {{ animal.nombre }}" class="foto-animal">
+        <figcaption class="p-2 d-flex flex-wrap gap-2 align-items-center">
+          {% if loop.first %}
+            <span class="insignia estado-disponible"><i class="bi bi-star-fill"></i> Principal</span>
+          {% else %}
+            <form method="post" action="{{ url_for('foto_principal_animal', animal_id=animal.id, foto_id=f.id) }}">
+              {{ c.csrf() }}
+              <button class="btn btn-sm btn-contorno" type="submit"><i class="bi bi-star"></i> Hacer principal</button>
+            </form>
+          {% endif %}
+          <form method="post" action="{{ url_for('borrar_foto_animal', animal_id=animal.id, foto_id=f.id) }}"
+                class="ms-auto" data-confirmar="¿Borrar esta foto?">
+            {{ c.csrf() }}
+            <button class="btn btn-sm btn-borrar" type="submit" aria-label="Borrar foto {{ loop.index }}"><i class="bi bi-trash"></i></button>
+          </form>
+        </figcaption>
+      </figure>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% set lugar = max_fotos - animal.fotos|length %}
+  {% if lugar > 0 %}
+  <form method="post" enctype="multipart/form-data" class="tarjeta p-4 mt-4" aria-label="Subir fotos">
+    {{ c.csrf() }}
+    <label for="f-fotos" class="form-label fw-semibold">{{ 'Agrega sus fotos' if not animal.fotos else 'Agregar más fotos' }} (puedes subir {{ lugar }} más)</label>
+    <input id="f-fotos" name="fotos" type="file" class="form-control" accept="image/jpeg,image/png,image/webp" multiple required
+           data-previas="f-previas" data-aviso="f-demasiadas" data-maximo="{{ lugar }}" aria-describedby="f-fotos-ayuda">
+    <p class="ayuda mb-0" id="f-fotos-ayuda">JPG, PNG o WebP, hasta 8 MB cada una. Les quitamos los datos ocultos (como la ubicación GPS de la cámara) antes de publicarlas.
+      Fotos claras, con luz natural y sin personas reconocibles.</p>
+    <p class="small text-alerta fw-semibold mt-2 mb-0" id="f-demasiadas" hidden>Elegiste más de {{ lugar }}. Quita algunas.</p>
+    <div class="d-flex flex-wrap gap-2 mt-2" id="f-previas"></div>
+    <button class="btn btn-naranja mt-3" type="submit">Subir fotos</button>
+  </form>
+  {% else %}
+  <p class="tarjeta p-3 mt-4 mb-0 small"><i class="bi bi-info-circle text-salvia"></i> Ya tiene {{ max_fotos }} fotos. Borra una para subir otra.</p>
+  {% endif %}
+
+  <div class="d-flex flex-wrap gap-2 mt-4">
+    <a class="btn btn-salvia" href="{{ url_for('detalle_animal', animal_id=animal.id) }}"><i class="bi bi-eye"></i> Ver su ficha pública</a>
+    <a class="btn btn-contorno" href="{{ url_for('mis_animales') }}">Listo</a>
+  </div>
+</div>
+{% endblock %}

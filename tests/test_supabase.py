@@ -41,7 +41,7 @@ class ConsultaFalsa:
         if self.error:
             raise self.error
         datos = {"animales": [FILA_CANELA], "refugios": [FILA_REFUGIO]}[self.tabla]
-        return type("Respuesta", (), {"data": datos})()
+        return type("Respuesta", (), {"data": datos, "count": len(datos)})()
 
 
 class ClienteFalso:
