@@ -346,3 +346,9 @@ a.tarjeta-enlace:hover { transform: translateY(-3px); box-shadow: var(--sombra-h
 .acciones-animal .btn-salvia { border: 2px solid var(--salvia); }
 .form-check-input:checked { background-color: var(--salvia); border-color: var(--salvia); }
 .form-check-input:focus { border-color: var(--verde-claro); box-shadow: 0 0 0 .2rem rgba(107, 143, 113, .25); }
+
+/* ---------- Esquinas cuadradas en todo el sitio (20 nov 2026) ----------
+   Para volver a las esquinas redondas, borra este bloque completo. */
+:root { --radio: 0; --radio-chico: 0; --bs-border-radius: 0; --bs-border-radius-sm: 0; --bs-border-radius-lg: 0;
+        --bs-border-radius-xl: 0; --bs-border-radius-pill: 0; }
+*, *::before, *::after { border-radius: 0 !important; }

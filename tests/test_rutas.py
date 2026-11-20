@@ -74,3 +74,12 @@ def test_cabeceras_de_seguridad(cliente):
     r = cliente.get("/")
     assert r.headers["X-Content-Type-Options"] == "nosniff"
     assert r.headers["X-Frame-Options"] == "SAMEORIGIN"
+
+
+def test_ip_real_en_vercel(monkeypatch):
+    """En Vercel los límites por IP usan la IP del visitante (x-real-ip), no la de la red de Vercel."""
+    from rutas_cuentas import _ip
+    with app.test_request_context("/", headers={"x-real-ip": "203.0.113.7"}, environ_base={"REMOTE_ADDR": "10.0.0.1"}):
+        assert _ip() == "10.0.0.1"              # fuera de Vercel no se confía en el encabezado
+        monkeypatch.setenv("VERCEL", "1")
+        assert _ip() == "203.0.113.7"

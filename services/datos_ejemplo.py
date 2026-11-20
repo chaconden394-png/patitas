@@ -6,7 +6,7 @@ Estos animales, refugios y alertas son ficticios. Se usan en el "modo de ejemplo
 No contienen datos personales reales.
 
 "edad_meses" y "convive_*" alimentan los filtros del catálogo (None = no se sabe).
-El campo "foto" es el nombre de un archivo dentro de static/images/animales/.
+El campo "foto" es el nombre de un archivo dentro de public/static/images/animales/.
 Si el archivo no existe, la página muestra un marcador ilustrado en su lugar.
 """
 

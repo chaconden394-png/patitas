@@ -72,3 +72,53 @@ document.addEventListener("click", (evento) => {
   boton.setAttribute("aria-label", visible ? "Mostrar contraseña" : "Ocultar contraseña");
   boton.querySelector("i").className = visible ? "bi bi-eye" : "bi bi-eye-slash";
 });
+
+// ---------------------------------------------------------------------------
+// Fotos más ligeras antes de enviarlas.
+// En Vercel cada envío puede pesar máximo 4.5 MB, y una foto de celular puede
+// pesar más. Aquí se reduce a 1600 px (el mismo tamaño que guarda el servidor)
+// y se convierte a JPEG; el servidor la vuelve a revisar y limpiar de todos modos.
+// ---------------------------------------------------------------------------
+const LADO_MAXIMO = 1600;
+
+async function reducirFoto(archivo) {
+  if (!archivo.type.startsWith("image/")) return archivo;
+  try {
+    const imagen = await createImageBitmap(archivo, { imageOrientation: "from-image" });
+    const escala = Math.min(1, LADO_MAXIMO / Math.max(imagen.width, imagen.height));
+    const lienzo = document.createElement("canvas");
+    lienzo.width = Math.round(imagen.width * escala);
+    lienzo.height = Math.round(imagen.height * escala);
+    const contexto = lienzo.getContext("2d");
+    contexto.fillStyle = "#ffffff";                 // fondo blanco para PNG transparentes
+    contexto.fillRect(0, 0, lienzo.width, lienzo.height);
+    contexto.drawImage(imagen, 0, 0, lienzo.width, lienzo.height);
+    const reducida = await new Promise((listo) => lienzo.toBlob(listo, "image/jpeg", 0.88));
+    if (!reducida || (reducida.size >= archivo.size && escala === 1 && archivo.type === "image/jpeg")) return archivo;
+    return new File([reducida], archivo.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+  } catch (error) {
+    return archivo;   // si este navegador no puede reducirla, se envía tal cual
+  }
+}
+
+document.addEventListener("submit", async (evento) => {
+  const formulario = evento.target;
+  const campos = [...formulario.querySelectorAll("input[type=file][data-reducir]")].filter((c) => c.files.length);
+  if (!campos.length || evento.defaultPrevented || formulario.dataset.fotosListas) return;
+  evento.preventDefault();
+  const boton = formulario.querySelector("[type=submit]");
+  const textoOriginal = boton ? boton.innerHTML : "";
+  if (boton) { boton.disabled = true; boton.textContent = "Preparando fotos…"; }
+  try {
+    for (const campo of campos) {
+      const lista = new DataTransfer();
+      for (const archivo of campo.files) lista.items.add(await reducirFoto(archivo));
+      campo.files = lista.files;
+    }
+  } catch (error) {
+    // Navegador sin DataTransfer: se envían las fotos originales.
+  }
+  formulario.dataset.fotosListas = "1";
+  if (boton) boton.innerHTML = textoOriginal;
+  formulario.submit();
+});

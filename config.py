@@ -21,6 +21,10 @@ class Config:
 
     # Modo de la aplicación: "development" o "production".
     PATITAS_ENV = os.getenv("PATITAS_ENV", "development")
+    # En producción (por ejemplo, Vercel) la clave es obligatoria: si cada servidor inventara
+    # la suya, las sesiones se cerrarían solas al pasar de un servidor a otro.
+    if PATITAS_ENV == "production" and not os.getenv("SECRET_KEY"):
+        raise RuntimeError("Falta la variable SECRET_KEY (obligatoria con PATITAS_ENV=production).")
 
     # Cookies de sesión más seguras.
     SESSION_COOKIE_HTTPONLY = True

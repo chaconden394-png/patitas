@@ -7,7 +7,9 @@
 - **Etapa 3 (cuentas):** ✅ **terminada** (9 nov 2026): probada en tu Supabase y en el navegador.
 - **Alerta Patitas, Parte B:** ✅ **terminada** (9 nov 2026): probada en tu Supabase con dos cuentas.
 - **Correo de confirmación de cuentas nuevas:** ✅ ya llega (confirmado el 17 nov 2026).
-- **Etapa 4 (animales y fotos):** construida y probada aquí (17 nov 2026). **Falta tu prueba en Supabase** (`GUIA_ETAPA4.md`).
+- **Etapa 4 (animales y fotos):** ✅ funcionando en tu Supabase (subida a GitHub el 20 nov 2026).
+- **Esquinas cuadradas en todo el sitio** (20 nov 2026, bloque al final de `patitas.css`).
+- **Preparado para Vercel** (20 nov 2026): `public/static/`, `vercel.json`, fotos reducidas en el navegador (límite de 4.5 MB por envío), `SECRET_KEY` obligatoria en producción, IP real para límites. Probado aquí (148 pruebas + navegador: una foto de 14 MB se envía como 1.2 MB). **No probado en Vercel real** (`GUIA_VERCEL.md`).
 
 ---
 
@@ -213,7 +215,8 @@ Adopciones, mensajes, reportes, notificaciones, campañas y donaciones se agrega
 - [ ] Ejecutar la migración 002 y la alerta ficticia en tu Supabase.
 - [ ] Empezar desde cero con `GUIA_SUPABASE.md` (repositorio y proyecto de Supabase nuevos).
 - [ ] Recibir moodboard y logotipo oficiales.
-- [ ] Ejecutar la migración 005 y probar la Etapa 4 en tu Supabase (`GUIA_ETAPA4.md`).
+- [ ] Publicar en Vercel y hacer las comprobaciones de `GUIA_VERCEL.md` (Parte E).
+- [ ] Límite de intentos en la base de datos (en Vercel la memoria no se comparte entre servidores).
 - [ ] Etapa 3: registro, inicio de sesión, recuperación de contraseña y verificación de correo.
 
 ## ❓ Decisiones abiertas (no se han inventado)

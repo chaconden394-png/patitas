@@ -59,12 +59,12 @@ Guía detallada: `GUIA_SUPABASE.md`.
 6. Reinicia la app. El aviso "Modo de ejemplo" debe desaparecer.
 
 ## Cómo agregar fotos de los animales de ejemplo
-Coloca las fotos en `static/images/animales/` con el nombre que aparece en el campo `foto`
+Coloca las fotos en `public/static/images/animales/` con el nombre que aparece en el campo `foto`
 de `services/datos_ejemplo.py` (por ejemplo `canela.jpg`). Si la foto no existe, la página muestra
 un marcador ilustrado. Usa fotos propias o con licencia libre.
 
 ## Cómo reemplazar el logotipo
-Sustituye `static/images/logo-patitas.svg` por el logo oficial **con el mismo nombre de archivo**.
+Sustituye `public/static/images/logo-patitas.svg` por el logo oficial **con el mismo nombre de archivo**.
 
 ---
 
@@ -81,15 +81,15 @@ Sustituye `static/images/logo-patitas.svg` por el logo oficial **con el mismo no
 | `services/supabase_cliente.py` | Conexión con Supabase (solo clave pública). |
 | `services/animales.py` | Consultas de animales y refugios (Supabase o ejemplo). |
 | `services/alertas.py` | Consultas de Alerta Patitas (Supabase o ejemplo). |
-| `static/js/alertas.js` | Mapa de la alerta y botón de compartir. |
+| `public/static/js/alertas.js` | Mapa de la alerta y botón de compartir. |
 | `probar_smtp.py` | Diagnostica el correo de Gmail (SMTP) usado por Supabase. |
 | `comprobar_supabase.py` | Script que revisa la conexión paso a paso. |
 | `templates/base.html` | Estructura común: menú, pie de página, fuentes, Bootstrap. |
 | `templates/componentes.html` | Piezas reutilizables: tarjeta de animal, insignias, avisos. |
 | `templates/*.html` | Una plantilla por página. |
-| `static/css/patitas.css` | Colores, tipografías y estilos del moodboard. |
-| `static/js/patitas.js` | Interacciones sencillas. |
-| `static/images/` | Logo y fotos públicas (nunca documentos privados). |
+| `public/static/css/patitas.css` | Colores, tipografías y estilos del moodboard. |
+| `public/static/js/patitas.js` | Interacciones sencillas. |
+| `public/static/images/` | Logo y fotos públicas (nunca documentos privados). |
 | `tests/` | Pruebas automáticas de Python; `tests/sql/` tiene las pruebas de permisos. |
 | `supabase/` | Migraciones SQL y datos de prueba (ver `supabase/README.md`). |
 | `AVANCE.md` | Registro de avance, decisiones y pendientes. |
@@ -100,7 +100,7 @@ Sustituye `static/images/logo-patitas.svg` por el logo oficial **con el mismo no
 | `rutas_alertas.py` | Páginas de alertas: emitir, "Lo vi", mi zona, mis alertas, notificaciones. |
 | `services/alertas_acciones.py` | Acciones de alertas con la sesión de la persona. |
 | `services/fotos.py` | Limpia las fotos (quita GPS/EXIF) antes de subirlas. |
-| `static/js/mapa_selector.js` | Mapa para marcar un punto y vista previa de fotos. |
+| `public/static/js/mapa_selector.js` | Mapa para marcar un punto y vista previa de fotos. |
 | `rutas_cuentas.py` | Páginas de registro, inicio de sesión, mi cuenta y paneles. |
 | `services/autenticacion.py` | Registro, sesión, contraseñas y perfil con Supabase Auth. |
 | `services/sesion.py` | Sesión del navegador y permisos por página. |

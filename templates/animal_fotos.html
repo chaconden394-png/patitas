@@ -44,7 +44,7 @@
   <form method="post" enctype="multipart/form-data" class="tarjeta p-4 mt-4" aria-label="Subir fotos">
     {{ c.csrf() }}
     <label for="f-fotos" class="form-label fw-semibold">{{ 'Agrega sus fotos' if not animal.fotos else 'Agregar más fotos' }} (puedes subir {{ lugar }} más)</label>
-    <input id="f-fotos" name="fotos" type="file" class="form-control" accept="image/jpeg,image/png,image/webp" multiple required
+    <input id="f-fotos" name="fotos" type="file" class="form-control" accept="image/jpeg,image/png,image/webp" multiple required data-reducir
            data-previas="f-previas" data-aviso="f-demasiadas" data-maximo="{{ lugar }}" aria-describedby="f-fotos-ayuda">
     <p class="ayuda mb-0" id="f-fotos-ayuda">JPG, PNG o WebP, hasta 8 MB cada una. Les quitamos los datos ocultos (como la ubicación GPS de la cámara) antes de publicarlas.
       Fotos claras, con luz natural y sin personas reconocibles.</p>

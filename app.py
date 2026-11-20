@@ -20,7 +20,9 @@ from rutas_alertas import registrar_rutas_alertas
 from rutas_animales import registrar_rutas_animales
 from rutas_cuentas import registrar_rutas_cuentas
 
-app = Flask(__name__)
+# Los archivos estáticos están en public/static/: así Vercel los sirve desde su CDN
+# (en Vercel, Flask no sirve /static) y en tu Codespace Flask los sirve igual que antes.
+app = Flask(__name__, static_folder="public/static", static_url_path="/static")
 app.config.from_object(Config)
 
 # Valores permitidos para los filtros (validación del lado del servidor).
@@ -38,7 +40,7 @@ CARPETA_FOTOS = os.path.join(app.static_folder, "images", "animales")
 # Utilidades disponibles en todas las plantillas
 # ---------------------------------------------------------------------------
 def foto_existe(nombre_archivo):
-    """True si la foto está en static/images/animales/."""
+    """True si la foto está en public/static/images/animales/."""
     return bool(nombre_archivo) and os.path.isfile(os.path.join(CARPETA_FOTOS, nombre_archivo))
 
 

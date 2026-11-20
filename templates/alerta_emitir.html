@@ -37,7 +37,7 @@
             <div class="col-12">
               <label for="a-foto" class="form-label small fw-semibold">Foto reciente (clara y de frente)</label>
               <input id="a-foto" name="foto" type="file" class="form-control" accept="image/jpeg,image/png,image/webp"
-                     required data-vista-previa="a-foto-previa" aria-describedby="a-foto-ayuda">
+                     required data-reducir data-vista-previa="a-foto-previa" aria-describedby="a-foto-ayuda">
               <p class="ayuda mb-0" id="a-foto-ayuda">JPG, PNG o WebP, hasta 8 MB. Le quitamos los datos ocultos (como la ubicación GPS de la cámara) antes de publicarla.
                 {% if datos.get('nombre_mascota') %}<strong>Vuelve a elegir la foto.</strong>{% endif %}</p>
               <img id="a-foto-previa" class="foto-previa mt-2" alt="Vista previa de la foto" hidden>

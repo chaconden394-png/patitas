@@ -4,6 +4,7 @@ de correo, recuperación de contraseña, mi cuenta, perfil público y paneles.
 
 app.py las activa con: registrar_rutas_cuentas(app)
 """
+import os
 import uuid
 
 from flask import abort, flash, redirect, render_template, request, session, url_for
@@ -20,6 +21,10 @@ MINUTO, HORA = 60, 3600
 
 
 def _ip():
+    # En Vercel la app está detrás de su red: la IP real llega en "x-real-ip"
+    # (Vercel la escribe y no deja que el visitante la falsifique). VERCEL=1 lo pone Vercel solo.
+    if os.getenv("VERCEL"):
+        return request.headers.get("x-real-ip") or request.remote_addr or "desconocida"
     return request.remote_addr or "desconocida"
 
 
